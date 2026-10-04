@@ -4,11 +4,11 @@ import 'package:sticker_control/main.dart';
 import 'support/material_repository_fake.dart';
 
 void main() {
-  testWidgets('app abre na lista de materiais', (tester) async {
+  testWidgets('app abre no novo orçamento', (tester) async {
     await tester.pumpWidget(
       StickerControlApp(materiais: MaterialRepositoryFake()),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Materiais'), findsOneWidget);
+    expect(find.text('Novo orçamento'), findsOneWidget);
   });
 }
