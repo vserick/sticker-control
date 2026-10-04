@@ -56,3 +56,6 @@ key.properties
 local.properties
 google-services.json
 .claude/settings.local.json
+
+# Codigo gerado (build_runner)
+*.g.dart
