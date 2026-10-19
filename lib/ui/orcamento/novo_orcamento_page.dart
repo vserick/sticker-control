@@ -10,6 +10,7 @@ import '../materiais/materiais_page.dart';
 import '../recorte/avisos.dart';
 import '../recorte/barra.dart';
 import '../recorte/campo.dart';
+import '../recorte/estados.dart';
 import '../recorte/icones.dart';
 import '../recorte/resultado.dart';
 import '../recorte/seletores.dart';
@@ -289,7 +290,32 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
     );
   }
 
-  List<Widget> _formularioProprio(List<MaterialAdesivo> materiais) {
+  /// Célula de carregamento no lugar do seletor e das medidas (5.1).
+  Widget _carregandoMateriais() {
+    return Container(
+      height: 156,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: RecorteCores.superficie,
+        border: Border.all(color: RecorteCores.borda),
+        borderRadius: BorderRadius.circular(RecorteRaio.celula),
+      ),
+      child: const IndicadorCarregando(rotuloSemantico: 'Carregando materiais'),
+    );
+  }
+
+  /// Duplicado cujo material original não existe mais (5.3): lista já
+  /// carregada, nenhum material com o nome do original e nada escolhido.
+  bool _materialOriginalExcluido(List<MaterialAdesivo> materiais) {
+    final nome = _materialNomeBase?.toLowerCase();
+    return widget.base != null &&
+        nome != null &&
+        _materialId == null &&
+        !materiais.any((m) => m.nome.toLowerCase() == nome);
+  }
+
+  List<Widget> _formularioProprio(List<MaterialAdesivo>? materiais) {
+    if (materiais == null) return [_carregandoMateriais()];
     if (materiais.isEmpty) return [_semMaterial()];
     return [
       SeletorMaterial(
@@ -304,6 +330,11 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
         selecionado: _materialId,
         onChanged: (id) => setState(() => _materialId = id),
       ),
+      if (_materialOriginalExcluido(materiais))
+        const AvisoAmarelo(
+          icone: Icons.info_outline,
+          texto: 'O material original não existe mais. Escolha outro.',
+        ),
       MolduraRecorte(
         eixo: Axis.horizontal,
         erros: _erros([_erroMedida(_comprimento), _erroMedida(_largura)]),
@@ -383,7 +414,8 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
       body: StreamBuilder<List<MaterialAdesivo>>(
         stream: _materiais,
         builder: (context, snapshot) {
-          final materiais = snapshot.data ?? const <MaterialAdesivo>[];
+          final carregados = snapshot.data;
+          final materiais = carregados ?? const <MaterialAdesivo>[];
           _resolverMaterialBase(materiais);
           final proprio = _tipo == TipoProducao.propria;
           final rascunho = _rascunho(materiais);
@@ -397,7 +429,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
               onChanged: (t) => setState(() => _tipo = t),
             ),
             if (proprio)
-              ..._formularioProprio(materiais)
+              ..._formularioProprio(carregados)
             else
               _formularioTerceirizado(),
             MolduraRecorte(
