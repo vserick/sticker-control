@@ -142,4 +142,33 @@ void main() {
     expect(find.text('Fornecedor'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Mensagem do WhatsApp cabe em 390 px, com texto longo', (
+    tester,
+  ) async {
+    usarCelular(tester);
+    final fake = ServicosFake();
+    fake.configuracoes.nomeEmpresa = 'Adesivos Exemplo';
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: construirTema(),
+        home: HistoricoPage(servicos: fake.servicos),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Menu'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Mensagem do WhatsApp'));
+    await tester.pumpAndSettle();
+    expect(find.text('Prévia'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.enterText(
+      campoDe('Modelo da mensagem'),
+      '{descricao} {medidas} ${'x' * 80} {valor}',
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
 }
