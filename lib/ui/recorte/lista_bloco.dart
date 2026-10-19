@@ -47,6 +47,9 @@ class ItemListaBloco extends StatelessWidget {
   /// Estilo do [valor]. Padrão: preço da lista (Schibsted 700 17).
   final TextStyle? estiloValor;
 
+  /// Valor composto (ex.: preço com a unidade em corpo menor); substitui [valor].
+  final InlineSpan? valorComposto;
+
   const ItemListaBloco({
     super.key,
     required this.ficha,
@@ -55,6 +58,7 @@ class ItemListaBloco extends StatelessWidget {
     required this.valor,
     this.onTap,
     this.estiloValor,
+    this.valorComposto,
   });
 
   @override
@@ -87,7 +91,13 @@ class ItemListaBloco extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Text(valor, style: estiloValor ?? RecorteTexto.precoLista),
+            if (valorComposto != null)
+              Text.rich(
+                valorComposto!,
+                style: estiloValor ?? RecorteTexto.precoLista,
+              )
+            else
+              Text(valor, style: estiloValor ?? RecorteTexto.precoLista),
           ],
         ),
       ),

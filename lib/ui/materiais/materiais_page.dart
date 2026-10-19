@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../data/material_repository.dart';
 import '../../logic/dinheiro.dart';
+import '../recorte/barra.dart';
+import '../recorte/botoes.dart';
+import '../recorte/estados.dart';
+import '../recorte/icones.dart';
+import '../recorte/lista_bloco.dart';
+import '../recorte/tipografia.dart';
+import '../recorte/tokens.dart';
 import 'material_form_page.dart';
 
 class MateriaisPage extends StatelessWidget {
@@ -21,76 +28,59 @@ class MateriaisPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Materiais')),
-      floatingActionButton: FloatingActionButton.extended(
+      appBar: const BarraRecorte(titulo: 'Materiais'),
+      floatingActionButton: BotaoFlutuanteRecorte(
+        rotulo: 'Novo material',
         onPressed: () => _abrirFormulario(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Novo material'),
       ),
       body: StreamBuilder<List<MaterialAdesivo>>(
         stream: repositorio.observarTodos(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Não foi possível carregar.'));
-          }
+          if (snapshot.hasError) return const EstadoErro();
           final materiais = snapshot.data;
-          if (materiais == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          if (materiais == null) return const CarregandoCentralizado();
           if (materiais.isEmpty) {
-            return const _EstadoVazio();
+            return const EstadoVazio(
+              icone: Icons.layers_outlined,
+              titulo: 'Nenhum material cadastrado',
+              texto:
+                  'Cadastre o primeiro material para poder fazer orçamentos.',
+            );
           }
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 88),
-            itemCount: materiais.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
-            itemBuilder: (context, i) {
-              final m = materiais[i];
-              return ListTile(
-                title: Text(m.nome),
-                subtitle: const Text('Largura 1,10 m'),
-                trailing: Text(
-                  '${formatarBrl(m.precoPorMetroCentavos)} / m',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                onTap: () => _abrirFormulario(context, m),
-              );
-            },
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(
+              RecorteEspaco.margemTela,
+              8,
+              RecorteEspaco.margemTela,
+              96,
+            ),
+            children: [
+              ListaBloco(
+                itens: [
+                  for (final m in materiais)
+                    ItemListaBloco(
+                      ficha: const FichaModalidade.material(),
+                      titulo: m.nome,
+                      metadado: 'Largura 1,10 m',
+                      valor: '${formatarBrl(m.precoPorMetroCentavos)} / m',
+                      valorComposto: TextSpan(
+                        children: [
+                          TextSpan(text: formatarBrl(m.precoPorMetroCentavos)),
+                          TextSpan(
+                            text: ' / m',
+                            style: RecorteTexto.rotuloLinha.copyWith(
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () => _abrirFormulario(context, m),
+                    ),
+                ],
+              ),
+            ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _EstadoVazio extends StatelessWidget {
-  const _EstadoVazio();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.layers_outlined,
-              size: 64,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Nenhum material cadastrado',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Cadastre o primeiro material para poder fazer orçamentos.',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }
