@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Materiais</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; display: flex; flex-direction: column; background: #EEF0EC; color: #17181B; font-family: 'Instrument Sans', system-ui, sans-serif; overflow: hidden; box-sizing: border-box">
+
+  <header style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 4px">
+    <button type="button" aria-label="Voltar" style="width: 48px; height: 48px; border: 0; background: transparent; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #17181B; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"></path></svg>
+    </button>
+    <h1 style="margin: 0; flex: 1; font-family: 'Schibsted Grotesk', sans-serif; font-size: 21px; line-height: 28px; font-weight: 800; letter-spacing: -0.025em">Materiais</h1>
+  </header>
+
+  <sc-if value="{{ehLista}}" hint-placeholder-val="{{ true }}">
+    <ul style="list-style: none; margin: 8px 16px 0; padding: 0; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; overflow: hidden">
+      <sc-for list="{{itens}}" as="it" hint-placeholder-count="4">
+        <li style="margin: 0; {{it.linha}}">
+          <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 16px 11px 12px; min-height: 66px; box-sizing: border-box; color: inherit; text-decoration: none">
+            <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex-shrink: 0"><rect x="6" y="6" width="24" height="24" rx="6" fill="{{tint}}"></rect><path d="M18 11.5 11 15.5l7 4 7-4-7-4zM11 20l7 4 7-4" fill="none" stroke="{{tintText}}" stroke-width="1.5" stroke-linejoin="round"></path><rect x="2.75" y="2.75" width="30.5" height="30.5" rx="9" fill="none" stroke="{{linhaMarca}}" stroke-width="1.5" stroke-dasharray="3.5 3"></rect></svg>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 16px; line-height: 21px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{it.nome}}</span>
+              <span style="font-size: 13px; line-height: 17px; color: #5A5E66">Largura 1,10 m</span>
+            </span>
+            <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap">{{it.preco}} <span style="font-size: 13px; font-weight: 600; color: #5A5E66">/ m</span></span>
+          </a>
+        </li>
+      </sc-for>
+    </ul>
+  </sc-if>
+
+  <sc-if value="{{ehVazio}}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 40px 120px; text-align: center">
+      <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true"><rect x="14" y="14" width="60" height="60" rx="16" fill="#ffffff" stroke="#CDD0C9"></rect><rect x="6.75" y="6.75" width="74.5" height="74.5" rx="22" fill="none" stroke="#8A8E95" stroke-width="1.5" stroke-dasharray="5 4"></rect><path d="M44 31 30 39l14 8 14-8-14-8zM30 48l14 8 14-8" fill="none" stroke="#5A5E66" stroke-width="2" stroke-linejoin="round"></path></svg>
+      <p style="margin: 6px 0 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 700">Nenhum material cadastrado</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #4A4E55">Cadastre o primeiro material para poder fazer orçamentos.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehCarregando}}" hint-placeholder-val="{{ false }}">
+    <div role="status" aria-label="Carregando" style="flex: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 120px">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="#CDD0C9" stroke-width="3" stroke-dasharray="5 4"></circle><path d="M22 4a18 18 0 0 1 18 18" fill="none" stroke="{{linhaMarca}}" stroke-width="3" stroke-linecap="round"></path></svg>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehErro}}" hint-placeholder-val="{{ false }}">
+    <div role="alert" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 40px 120px; text-align: center">
+      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><rect x="4.75" y="4.75" width="54.5" height="54.5" rx="16" fill="none" stroke="#B3261E" stroke-width="1.5" stroke-dasharray="5 4"></rect><path d="M32 20v15M32 42v1" stroke="#B3261E" stroke-width="3" stroke-linecap="round"></path></svg>
+      <p style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 700">Não foi possível carregar.</p>
+    </div>
+  </sc-if>
+
+  <button type="button" style="position: absolute; right: 22px; bottom: 32px; height: 56px; padding: 0 22px 0 18px; border: 0; border-radius: 14px; background: {{brand}}; color: {{onBrand}}; outline: 1.5px dashed #17181B; outline-offset: 4px; box-shadow: 0 6px 14px rgba(23, 24, 27, 0.22); display: flex; align-items: center; gap: 10px; font-family: 'Schibsted Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    Novo material
+  </button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["lista","vazio","carregando","erro"],"default":"lista"},"brand":{"editor":"color","default":"#C2185B","section":"Marca da empresa","options":["#C2185B","#F2C200","#6D28D9","#1F6F5C"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  hx(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join(''); var n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  he(a) { return '#' + a.map(function (v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? '0' + s : s; }).join(''); }
+  mix(a, b, t) { var x = this.hx(a), y = this.hx(b); return this.he(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  lum(h) { var c = this.hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { var x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  ink(c, bg, alvo) { var t = 0, r = c; while (this.cr(r, bg) < alvo && t < 1) { t += 0.05; r = this.mix(c, '#000000', t); } return r; }
+  renderVals() {
+    var e = this.props.estado || 'lista';
+    var brand = this.props.brand || '#C2185B';
+    var tint = this.mix(brand, '#ffffff', 0.72);
+    var itens = [['Vinil Branco', 'R$ 50,00'], ['Vinil Perfurado', 'R$ 68,00'], ['Vinil Preto Fosco', 'R$ 52,00'], ['Vinil Transparente', 'R$ 54,00']];
+    return {
+      brand: brand,
+      onBrand: this.cr(brand, '#ffffff') >= this.cr(brand, '#17181B') ? '#ffffff' : '#17181B',
+      tint: tint, tintText: this.ink(this.mix(brand, '#17181B', 0.2), tint, 4.5), linhaMarca: this.ink(brand, '#ffffff', 3),
+      ehLista: e === 'lista', ehVazio: e === 'vazio', ehCarregando: e === 'carregando', ehErro: e === 'erro',
+      itens: itens.map(function (m, i) { return { nome: m[0], preco: m[1], linha: i === 0 ? '' : 'border-top: 1px solid #E4E6E1' }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mapa do app — Recorte</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+.sg{font-family:'Schibsted Grotesk',sans-serif}
+.h2{margin:0 0 14px;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.03em}
+.k{font-size:12px;line-height:16px;font-weight:600;color:#5A5E66}
+table{border-collapse:collapse;width:100%;font-size:13px;line-height:18px}
+th{text-align:left;font-size:12px;font-weight:600;color:#5A5E66;padding:8px 10px;border-bottom:1px solid #17181B}
+td{padding:9px 10px;border-bottom:1px solid #E4E6E1;vertical-align:top}
+td b{font-weight:600}
+.ok{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;background:#DFF1E7;color:#155C38;white-space:nowrap}
+.novo{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;background:#F8DCE7;color:#8E1243;white-space:nowrap}
+.fora{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;background:#E2E5DF;color:#3F434A;white-space:nowrap}
+.box{background:#fff;border:1px solid #CDD0C9;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+.ar{font-size:12px;color:#5A5E66;padding:0 6px;white-space:nowrap}
+.panel{background:#fff;border:1px solid #CDD0C9;border-radius:16px;padding:20px 22px}
+ol{margin:0;padding-left:20px;font-size:13px;line-height:19px}
+ol li{margin-bottom:7px}
+code{font-size:12px;background:#EEF0EC;padding:1px 4px;border-radius:4px}
+</style>
+</helmet>
+<div style="width: 1600px; height: 1240px; box-sizing: border-box; padding: 48px 56px; background: #EEF0EC; color: #17181B; font-family: 'Instrument Sans', system-ui, sans-serif; display: grid; grid-template-columns: 1.08fr 1fr; gap: 36px">
+
+  <div style="display: flex; flex-direction: column; gap: 20px">
+    <div>
+      <span class="k">Levantado do código (lib/ui) e dos prints do app — nenhuma tela inventada</span>
+      <h1 class="sg" style="margin: 6px 0 0; font-size: 40px; line-height: 44px; font-weight: 800; letter-spacing: -0.04em">7 telas, 3 diálogos, 4 avisos</h1>
+    </div>
+    <div class="panel" style="padding: 8px 14px 4px">
+      <table>
+        <thead><tr><th style="width: 30%">Tela</th><th style="width: 15%">Situação</th><th>Estados nesta etapa</th><th style="width: 13%">Página</th></tr></thead>
+        <tbody>
+          <tr><td><b>Início · Orçamentos</b><br><span class="k">historico_page</span></td><td><span class="ok">Aprovado</span> <span class="novo">+ estados</span></td><td>Com dados (aprovado). Novos: vazio, carregando, erro, menu aberto, avisos após salvar.</td><td>Recorte · 1</td></tr>
+          <tr><td><b>Menu do Início</b><br><span class="k">Materiais · Nome da empresa · Mensagem</span></td><td><span class="novo">Novo</span></td><td>Aberto sobre a lista.</td><td>Recorte · 1</td></tr>
+          <tr><td><b>Diálogo · Nome da empresa</b></td><td><span class="novo">Novo</span></td><td>Com texto e teclado aberto.</td><td>Recorte · 1</td></tr>
+          <tr><td><b>Novo orçamento</b><br><span class="k">novo_orcamento_page</span></td><td><span class="ok">Aprovado</span> <span class="novo">+ estados</span></td><td>Própria preenchida (aprovado). Novos: carregando, terceirizada, incompleto, sem material, erro de validação, aviso de largura, teclado aberto, salvando.</td><td>Recorte · 2</td></tr>
+          <tr><td><b>Novo orçamento via "Duplicar"</b></td><td><span class="ok">Mesmo design</span></td><td>A mesma tela, já preenchida. Novo: aviso quando o material original foi excluído.</td><td>—</td></tr>
+          <tr><td><b>Orçamento (detalhe)</b><br><span class="k">detalhe_orcamento_page</span></td><td><span class="novo">Novo</span></td><td>Própria, terceirizada, com empresa.</td><td>Recorte · 3</td></tr>
+          <tr><td><b>Diálogo · Excluir orçamento?</b></td><td><span class="novo">Novo</span></td><td>Confirmação.</td><td>Recorte · 3</td></tr>
+          <tr><td><b>Materiais</b><br><span class="k">materiais_page</span></td><td><span class="novo">Novo</span></td><td>Lista, vazio, carregando, erro, com empresa.</td><td>Recorte · 4</td></tr>
+          <tr><td><b>Novo / Editar material</b><br><span class="k">material_form_page</span></td><td><span class="novo">Novo</span></td><td>Inicial, validação, nome repetido, teclado, editar.</td><td>Recorte · 4</td></tr>
+          <tr><td><b>Diálogo · Excluir material?</b></td><td><span class="novo">Novo</span></td><td>Confirmação.</td><td>Recorte · 4</td></tr>
+          <tr><td><b>Mensagem do WhatsApp</b><br><span class="k">modelo_mensagem_page</span></td><td><span class="novo">Novo</span></td><td>Topo, prévia e ações, teclado, mensagem vazia, com nome da empresa.</td><td>Recorte · 5</td></tr>
+          <tr><td><b>Avisos rápidos</b> (rodapé)</td><td><span class="novo">Novo</span></td><td>"Orçamento salvo." · "…mas não foi possível abrir o WhatsApp." · "Não foi possível abrir o WhatsApp." · "Mensagem salva."</td><td>1 e 3</td></tr>
+          <tr><td><b>WhatsApp</b></td><td><span class="fora">App externo</span></td><td>O app só abre o WhatsApp com a mensagem pronta.</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 18px">
+    <section class="panel">
+      <h2 class="h2">Navegação atual (sem mudanças)</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Início</span><span class="ar">"Novo orçamento" →</span><span class="box">Novo orçamento</span><span class="ar">Salvar →</span><span class="box">Início + aviso</span></div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Início</span><span class="ar">toque no item →</span><span class="box">Orçamento</span><span class="ar">Duplicar → (substitui)</span><span class="box">Novo orçamento</span></div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Orçamento</span><span class="ar">Excluir →</span><span class="box">Confirmação</span><span class="ar">→</span><span class="box">Início</span><span class="ar">· Enviar → WhatsApp</span></div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Menu</span><span class="ar">→</span><span class="box">Materiais</span><span class="ar">→</span><span class="box">Novo / Editar material</span><span class="ar">→</span><span class="box">Excluir material?</span></div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Novo orçamento</span><span class="ar">ícone Materiais ou "Cadastrar" →</span><span class="box">Materiais</span></div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px"><span class="box">Menu</span><span class="ar">→</span><span class="box">Nome da empresa (diálogo)</span><span class="ar">· Menu →</span><span class="box">Mensagem</span><span class="ar">Salvar →</span><span class="box">Início + aviso</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="h2">Decisões tomadas (19/10)</h2>
+      <ol>
+        <li><b>Carregamento no Novo orçamento:</b> <span class="novo">mudança de comportamento</span> indicador igual ao de Materiais enquanto a lista carrega.</li>
+        <li><b>Erro no Início:</b> <span class="novo">mudança de comportamento</span> "Não foi possível carregar.", igual a Materiais.</li>
+        <li><b>Duplicar com material excluído:</b> <span class="novo">mudança de comportamento</span> aviso "O material original não existe mais. Escolha outro."</li>
+        <li><b>"Restaurar padrão":</b> continua sem confirmação.</li>
+        <li><b>Nome da empresa vazio:</b> continua permitido.</li>
+        <li><b>Logotipo e cor da empresa:</b> sem tela por enquanto.</li>
+        <li><b>Excluir nas confirmações:</b> vermelho preenchido nos dois diálogos (visual).</li>
+        <li><b>"Salvar" do diálogo Nome da empresa:</b> na cor da marca, magenta no padrão (visual).</li>
+        <li><b>Data no Início:</b> formato completo do app, "19/10/2026 14:32".</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="h2">Personalização: hoje × depois</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; font-size: 13px; line-height: 19px">
+        <div><span class="ok">Existe hoje</span><p style="margin: 8px 0 0">Nome da empresa (diálogo do menu). Usado no topo da mensagem do WhatsApp e na prévia ("Sua Empresa" quando vazio).</p></div>
+        <div><span class="novo">A implementar</span><p style="margin: 8px 0 0">Logotipo, cor principal, nome no topo do Início, cor no adesivo do preço, no botão "Novo/Novo material" e no foco dos campos.</p></div>
+      </div>
+      <p class="k" style="margin: 12px 0 0">Todas as telas novas aceitam os ajustes "Marca da empresa" (cor, nome, sigla, forma) para testar.</p>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

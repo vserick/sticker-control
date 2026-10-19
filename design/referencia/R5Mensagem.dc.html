@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Mensagem do WhatsApp</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; display: flex; flex-direction: column; background: #EEF0EC; color: #17181B; font-family: 'Instrument Sans', system-ui, sans-serif; overflow: hidden; box-sizing: border-box">
+
+  <header style="position: relative; z-index: 1; height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 4px; background: {{fundoTopo}}">
+    <button type="button" aria-label="Voltar" style="width: 48px; height: 48px; border: 0; background: transparent; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #17181B; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"></path></svg>
+    </button>
+    <h1 style="margin: 0; flex: 1; font-family: 'Schibsted Grotesk', sans-serif; font-size: 21px; line-height: 28px; font-weight: 800; letter-spacing: -0.025em">Mensagem do WhatsApp</h1>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; box-sizing: border-box">
+    <div style="margin-top: {{rolagem}}; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 14px">
+      <p style="margin: 0; font-size: 14px; line-height: 21px; color: #4A4E55">Monte a mensagem enviada ao cliente. Toque numa variável para inseri-la onde o cursor está. Use *texto* para negrito. Linhas cujas variáveis ficam vazias não aparecem.</p>
+
+      <label style="display: flex; flex-direction: column; gap: 6px; padding: 12px 16px 14px; min-height: 216px; box-sizing: border-box; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; cursor: text; {{editorCell}}">
+        <span style="font-size: 12px; line-height: 16px; font-weight: 600; {{editorRotulo}}">Modelo da mensagem</span>
+        <span style="display: flex; flex-direction: column; font-size: 15px; line-height: 22px">
+          <sc-for list="{{modelo}}" as="l" hint-placeholder-count="13">
+            <span style="min-height: 22px; white-space: pre-wrap">{{l.t}}<sc-if value="{{l.cursor}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display: inline-block; width: 1.5px; height: 18px; margin-left: 1px; vertical-align: -3px; background: #17181B"></span></sc-if></span>
+          </sc-for>
+        </span>
+      </label>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{variaveis}}" as="v" hint-placeholder-count="8">
+          <button type="button" title="{{v.d}}" style="height: 40px; padding: 0 14px; border: 1px solid #CDD0C9; border-radius: 10px; background: #ffffff; color: #17181B; font-family: 'Schibsted Grotesk', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer">{{v.n}}</button>
+        </sc-for>
+      </div>
+
+      <h2 style="margin: 6px 0 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 15px; line-height: 20px; font-weight: 700">Prévia</h2>
+      <div style="background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; font-size: 15px; line-height: 22px">
+        <sc-if value="{{vazia}}" hint-placeholder-val="{{ false }}">
+          <span style="color: #5A5E66">(mensagem vazia)</span>
+        </sc-if>
+        <sc-for list="{{previa}}" as="l" hint-placeholder-count="13">
+          <span style="min-height: 22px; white-space: pre-wrap">{{l.t}}</span>
+        </sc-for>
+      </div>
+
+      <button type="button" style="height: 52px; border: 0; border-radius: 12px; background: #17181B; color: #ffffff; font-family: 'Schibsted Grotesk', sans-serif; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 4v5h7V4"></path><circle cx="12" cy="15" r="2.5"></circle></svg>
+        Salvar
+      </button>
+      <button type="button" style="height: 48px; border: 0; border-radius: 12px; background: transparent; color: #17181B; font-family: 'Schibsted Grotesk', sans-serif; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6"></path><path d="M4 4v4h4"></path><path d="M12 8v4l3 2"></path></svg>
+        Restaurar padrão
+      </button>
+    </div>
+  </main>
+
+  <sc-if value="{{teclado}}" hint-placeholder-val="{{ false }}">
+    <div style="flex-shrink: 0">
+      <dc-import name="RTeclado" tipo="texto" hint-size="390px,250px"></dc-import>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["topo","previa","teclado","vazia","empresa"],"default":"topo"},"brand":{"editor":"color","default":"#C2185B","section":"Marca da empresa","options":["#C2185B","#F2C200","#6D28D9","#1F6F5C"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  hx(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join(''); var n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  he(a) { return '#' + a.map(function (v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? '0' + s : s; }).join(''); }
+  mix(a, b, t) { var x = this.hx(a), y = this.hx(b); return this.he(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  lum(h) { var c = this.hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { var x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  ink(c, bg, alvo) { var t = 0, r = c; while (this.cr(r, bg) < alvo && t < 1) { t += 0.05; r = this.mix(c, '#000000', t); } return r; }
+  renderVals() {
+    var e = this.props.estado || 'topo';
+    var brand = this.props.brand || '#C2185B';
+    var linha = this.ink(brand, '#ffffff', 3), texto = this.ink(brand, '#ffffff', 4.5);
+    var traco = '━━━━━━━━━━━━━━';
+    var modelo = ['🏷️ *{empresa}*', traco, '*ORÇAMENTO DE ADESIVO*', traco, '', '▪️ *Item:* {material}', '▪️ *Descrição:* {descricao}', '▪️ *Medidas:* {medidas}', '', '💰 *Valor: {valor}*', '', '📅 {data}'];
+    var empresa = e === 'empresa' ? 'Bentevi Adesivos' : 'Sua Empresa';
+    var previa = ['🏷️ *' + empresa + '*', traco, '*ORÇAMENTO DE ADESIVO*', traco, '', '▪️ *Item:* Vinil branco', '▪️ *Descrição:* Adesivo de porta', '▪️ *Medidas:* 1,10 × 2,00 m', '', '💰 *Valor: R$ 150,00*', '', '📅 19/10/2026'];
+    var vazia = e === 'vazia';
+    var foco = e === 'teclado';
+    var vars = [['empresa', 'Nome da empresa'], ['material', 'Material usado (só produção própria)'], ['descricao', 'Descrição do orçamento'], ['medidas', 'Largura × comprimento'], ['largura', 'Largura, ex.: 1,10 m'], ['comprimento', 'Comprimento, ex.: 2,00 m'], ['valor', 'Preço final'], ['data', 'Data do orçamento']];
+    return {
+      fundoTopo: (e === 'previa' || e === 'empresa' || foco) ? '#E2E5DF' : 'transparent',
+      rolagem: (e === 'previa' || e === 'empresa') ? '-372px' : (foco ? '-110px' : '0px'),
+      modelo: (vazia ? [''] : modelo).map(function (t, i, arr) { return { t: t, cursor: (foco && i === arr.length - 1) || (vazia && i === 0 && false) }; }),
+      editorCell: foco ? 'box-shadow: inset 0 0 0 2px ' + linha : '',
+      editorRotulo: foco ? 'color: ' + texto + '; font-weight: 700' : 'color: #5A5E66',
+      variaveis: vars.map(function (v) { return { n: '{' + v[0] + '}', d: v[1] }; }),
+      vazia: vazia,
+      previa: vazia ? [] : previa.map(function (t) { return { t: t }; }),
+      teclado: foco
+    };
+  }
+}
+</script>
+</body>
+</html>

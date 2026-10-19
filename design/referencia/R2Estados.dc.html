@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Novo orçamento, estados</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 3680px; height: 844px; display: flex; gap: 80px">
+  <dc-import name="R2Novo" estado="carregando" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="duplicado" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="incompleto" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="semMaterial" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="erro" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="aviso" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="teclado" hint-size="390px,844px"></dc-import>
+  <dc-import name="R2Novo" estado="salvando" hint-size="390px,844px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3680,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
