@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sticker_control/ui/materiais/materiais_page.dart';
 
+import '../support/finders.dart';
 import '../support/material_repository_fake.dart';
 
 Future<MaterialRepositoryFake> _abrir(
@@ -18,14 +19,8 @@ Future<MaterialRepositoryFake> _abrir(
 }
 
 Future<void> _preencher(WidgetTester tester, String nome, String preco) async {
-  await tester.enterText(
-    find.widgetWithText(TextFormField, 'Nome do material'),
-    nome,
-  );
-  await tester.enterText(
-    find.widgetWithText(TextFormField, 'Preço por metro'),
-    preco,
-  );
+  await tester.enterText(campoDe('Nome do material'), nome);
+  await tester.enterText(campoDe('Preço por metro'), preco);
 }
 
 void main() {
@@ -102,10 +97,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Editar material'), findsOneWidget);
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Preço por metro'),
-      '60,00',
-    );
+    await tester.enterText(campoDe('Preço por metro'), '60,00');
     await tester.tap(find.text('Salvar'));
     await tester.pumpAndSettle();
 

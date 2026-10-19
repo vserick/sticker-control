@@ -62,4 +62,32 @@ void main() {
     expect(find.text('R\$ 1.234,56 / m'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('formulário cabe em 390 px: novo com erros e edição', (
+    tester,
+  ) async {
+    final repo = MaterialRepositoryFake();
+    await repo.criar(nome: 'Vinil Branco', precoPorMetroCentavos: 5000);
+    await _abrir(tester, repo);
+
+    await tester.tap(find.text('Novo material'));
+    await tester.pumpAndSettle();
+    expect(find.text('Largura fixa: 1,10 m.'), findsOneWidget);
+    expect(find.byTooltip('Excluir'), findsNothing);
+    await tester.tap(find.text('Salvar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Informe o nome.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Vinil Branco'));
+    await tester.pumpAndSettle();
+    expect(find.text('Editar material'), findsOneWidget);
+    expect(find.byTooltip('Excluir'), findsOneWidget);
+    await tester.tap(find.byTooltip('Excluir'));
+    await tester.pumpAndSettle();
+    expect(find.text('Excluir material?'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
