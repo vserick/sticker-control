@@ -3,16 +3,22 @@ import 'package:flutter/material.dart';
 import '../../data/material_repository.dart';
 import '../../logic/calculo.dart';
 import '../../logic/dinheiro.dart';
+import '../../logic/formatacao.dart';
+import '../../logic/orcamento.dart';
+import '../../servicos.dart';
 import '../materiais/materiais_page.dart';
-
-enum TipoProducao { propria, terceirizada }
+import 'enviar_whatsapp.dart';
 
 /// Calcula um orçamento com resultado ao vivo (visão interna: custo,
-/// acréscimo e preço final). Salvar e WhatsApp entram na F1.4.
+/// acréscimo e preço final), salva no histórico e envia por WhatsApp.
+///
+/// Com [base] (duplicar), os campos já vêm preenchidos para refazer com outro
+/// acréscimo. O material é procurado pelo nome e usa o preço atual dele.
 class NovoOrcamentoPage extends StatefulWidget {
-  final MaterialRepository materiais;
+  final Servicos servicos;
+  final Orcamento? base;
 
-  const NovoOrcamentoPage({super.key, required this.materiais});
+  const NovoOrcamentoPage({super.key, required this.servicos, this.base});
 
   @override
   State<NovoOrcamentoPage> createState() => _NovoOrcamentoPageState();
@@ -23,17 +29,45 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
   final _largura = TextEditingController();
   final _acrescimo = TextEditingController();
   final _fornecedor = TextEditingController();
+  final _descricao = TextEditingController();
   TipoProducao _tipo = TipoProducao.propria;
   int? _materialId;
+  String? _materialNomeBase;
+  bool _salvando = false;
 
-  late final Stream<List<MaterialAdesivo>> _materiais = widget.materiais
+  late final Stream<List<MaterialAdesivo>> _materiais = widget
+      .servicos
+      .materiais
       .observarTodos();
 
   @override
   void initState() {
     super.initState();
-    for (final c in [_comprimento, _largura, _acrescimo, _fornecedor]) {
+    final base = widget.base;
+    if (base != null) _preencher(base);
+    for (final c in [
+      _comprimento,
+      _largura,
+      _acrescimo,
+      _fornecedor,
+      _descricao,
+    ]) {
       c.addListener(_recalcular);
+    }
+  }
+
+  void _preencher(Orcamento base) {
+    _tipo = base.tipo;
+    _materialNomeBase = base.materialNome;
+    _descricao.text = base.descricao ?? '';
+    _acrescimo.text = formatarPercentual(base.acrescimoBp);
+    final largura = base.larguraMm;
+    if (largura != null) _largura.text = formatarMetros(largura);
+    final comprimento = base.comprimentoMm;
+    if (comprimento != null) _comprimento.text = formatarMetros(comprimento);
+    final fornecedor = base.fornecedorCentavos;
+    if (fornecedor != null) {
+      _fornecedor.text = formatarBrl(fornecedor).replaceFirst(r'R$ ', '');
     }
   }
 
@@ -43,7 +77,84 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
     _largura.dispose();
     _acrescimo.dispose();
     _fornecedor.dispose();
+    _descricao.dispose();
     super.dispose();
+  }
+
+  /// Seleciona o material do orçamento duplicado, se ainda existir.
+  void _resolverMaterialBase(List<MaterialAdesivo> materiais) {
+    final nome = _materialNomeBase?.toLowerCase();
+    if (nome == null || _materialId != null) return;
+    _materialId = materiais
+        .where((m) => m.nome.toLowerCase() == nome)
+        .firstOrNull
+        ?.id;
+  }
+
+  /// Dados prontos para salvar ou enviar, ou `null` enquanto os campos
+  /// estiverem incompletos ou inválidos.
+  RascunhoOrcamento? _rascunho(List<MaterialAdesivo> materiais) {
+    final resultado = _resultado(materiais);
+    final acrescimo = _acrescimoBp;
+    if (resultado == null || acrescimo == null) return null;
+    final descricao = _descricao.text.trim();
+    final texto = descricao.isEmpty ? null : descricao;
+    final largura = lerMetrosEmMm(_largura.text);
+
+    if (_tipo == TipoProducao.terceirizada) {
+      // Largura é opcional aqui, mas se digitada precisa ser válida.
+      if (_largura.text.trim().isNotEmpty &&
+          (largura == null || largura <= 0)) {
+        return null;
+      }
+      return RascunhoOrcamento(
+        tipo: _tipo,
+        descricao: texto,
+        larguraMm: _largura.text.trim().isEmpty ? null : largura,
+        fornecedorCentavos: lerCentavos(_fornecedor.text),
+        custoCentavos: resultado.custoCentavos,
+        acrescimoBp: acrescimo,
+        finalCentavos: resultado.finalCentavos,
+      );
+    }
+    final material = materiais.where((m) => m.id == _materialId).firstOrNull;
+    if (material == null) return null;
+    return RascunhoOrcamento(
+      tipo: _tipo,
+      descricao: texto,
+      larguraMm: largura,
+      comprimentoMm: lerMetrosEmMm(_comprimento.text),
+      materialNome: material.nome,
+      precoPorMetroCentavos: material.precoPorMetroCentavos,
+      custoCentavos: resultado.custoCentavos,
+      acrescimoBp: acrescimo,
+      finalCentavos: resultado.finalCentavos,
+    );
+  }
+
+  /// Grava o orçamento e, com [enviar], abre o WhatsApp em seguida. Todo
+  /// orçamento enviado fica no histórico.
+  Future<void> _salvar(
+    RascunhoOrcamento rascunho, {
+    bool enviar = false,
+  }) async {
+    setState(() => _salvando = true);
+    final navigator = Navigator.of(context);
+    final mensagens = ScaffoldMessenger.of(context);
+    final salvo = await widget.servicos.orcamentos.salvar(rascunho);
+    final enviado = enviar
+        ? await enviarPorWhatsapp(widget.servicos, salvo)
+        : true;
+    navigator.pop();
+    mensagens.showSnackBar(
+      SnackBar(
+        content: Text(
+          enviado
+              ? 'Orçamento salvo.'
+              : 'Orçamento salvo, mas não foi possível abrir o WhatsApp.',
+        ),
+      ),
+    );
   }
 
   void _recalcular() => setState(() {});
@@ -105,7 +216,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
   void _abrirMateriais() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => MateriaisPage(repositorio: widget.materiais),
+        builder: (_) => MateriaisPage(repositorio: widget.servicos.materiais),
       ),
     );
   }
@@ -119,12 +230,13 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
     String? sufixo,
     String? erro,
     String? ajuda,
+    TextInputType teclado = _teclado,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
-        keyboardType: _teclado,
+        keyboardType: teclado,
         decoration: InputDecoration(
           labelText: label,
           prefixText: prefixo,
@@ -281,7 +393,9 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
         stream: _materiais,
         builder: (context, snapshot) {
           final materiais = snapshot.data ?? const <MaterialAdesivo>[];
+          _resolverMaterialBase(materiais);
           final proprio = _tipo == TipoProducao.propria;
+          final rascunho = _rascunho(materiais);
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -318,7 +432,28 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
                 sufixo: '%',
                 erro: _erroAcrescimo,
               ),
+              _campo(
+                controller: _descricao,
+                label: 'Descrição (opcional)',
+                teclado: TextInputType.text,
+              ),
               _resultadoCard(_resultado(materiais)),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: rascunho == null || _salvando
+                    ? null
+                    : () => _salvar(rascunho),
+                icon: const Icon(Icons.save_outlined),
+                label: const Text('Salvar'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: rascunho == null || _salvando
+                    ? null
+                    : () => _salvar(rascunho, enviar: true),
+                icon: const Icon(Icons.send),
+                label: const Text('Salvar e enviar por WhatsApp'),
+              ),
             ],
           );
         },
