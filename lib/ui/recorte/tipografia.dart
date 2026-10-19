@@ -63,6 +63,7 @@ abstract final class RecorteTexto {
   static final valorCelula = _titulo(26, 34, 600, tabular: true);
   static final precoLista = _titulo(17, 22, 700, tabular: true);
   static final valorResultado = _titulo(14, 20, 600, tabular: true);
+  static final tituloCartao = _titulo(19, 24, 700, em: -0.015);
   static final tituloDialogo = _titulo(22, 28, 800, em: -0.03);
   static final tituloEstado = _titulo(18, 24, 700);
   static final botao = _titulo(16, 20, 700);
@@ -105,6 +106,7 @@ abstract final class RecorteTexto {
   static final erroCampo = _corpoBase(12, 16, 600, cor: RecorteCores.erro);
   static final unidade = _corpoBase(15, 20, 600, cor: RecorteCores.rotulo);
   static final rotuloLinha = _corpoBase(14, 20, 600, cor: RecorteCores.rotulo);
+  static final valorLinha = _corpoBase(15, 20, 600, tabular: true);
   static final valorTexto = _corpoBase(17, 22, 400);
   static final itemMenu = _corpoBase(15, 20, 600);
   static final avisoRodape = _corpoBase(
