@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../../logic/mensagem_whatsapp.dart';
 import '../../logic/orcamento.dart';
 import '../../servicos.dart';
+import '../recorte/avisos.dart';
+import '../recorte/barra.dart';
+import '../recorte/campo.dart';
+import '../recorte/tipografia.dart';
+import '../recorte/tokens.dart';
 
 /// Exemplo usado na prévia: o modelo nunca é testado com dados reais.
 const _exemplo = RascunhoOrcamento(
@@ -75,12 +80,11 @@ class _ModeloMensagemPageState extends State<ModeloMensagemPage> {
       texto == modeloMensagemPadrao.trim() ? '' : texto,
     );
     navigator.pop();
-    mensagens.showSnackBar(const SnackBar(content: Text('Mensagem salva.')));
+    mensagens.showSnackBar(avisoRodape('Mensagem salva.'));
   }
 
   @override
   Widget build(BuildContext context) {
-    final tema = Theme.of(context);
     final previa = montarMensagemWhatsapp(
       _exemplo,
       empresa: widget.empresa ?? 'Sua Empresa',
@@ -88,63 +92,82 @@ class _ModeloMensagemPageState extends State<ModeloMensagemPage> {
       agora: _agora,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Mensagem do WhatsApp')),
+      appBar: const BarraRecorte(titulo: 'Mensagem do WhatsApp'),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(
+          RecorteEspaco.margemTela,
+          8,
+          RecorteEspaco.margemTela,
+          24,
+        ),
         children: [
           Text(
             'Monte a mensagem enviada ao cliente. Toque numa variável para '
             'inseri-la onde o cursor está. Use *texto* para negrito. Linhas '
             'cujas variáveis ficam vazias não aparecem.',
-            style: tema.textTheme.bodyMedium,
+            style: RecorteTexto.corpoSecundario21,
           ),
-          const SizedBox(height: 16),
-          TextField(
+          const SizedBox(height: RecorteEspaco.entreBlocos),
+          CampoRecorte(
+            rotulo: 'Modelo da mensagem',
             controller: _controller,
-            minLines: 8,
-            maxLines: 16,
-            keyboardType: TextInputType.multiline,
-            decoration: const InputDecoration(
-              labelText: 'Modelo da mensagem',
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(),
-            ),
+            grande: false,
+            estiloValor: RecorteTexto.corpo,
+            minLinhas: 8,
+            maxLinhas: 16,
+            teclado: TextInputType.multiline,
           ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
-            runSpacing: 4,
+            runSpacing: 8,
             children: [
               for (final v in variaveisMensagem.entries)
                 Tooltip(
                   message: v.value,
                   child: ActionChip(
                     label: Text('{${v.key}}'),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 6,
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onPressed: () => _inserir(v.key),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text('Prévia', style: tema.textTheme.titleSmall),
-          const SizedBox(height: 4),
-          Card(
-            color: tema.colorScheme.secondaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SelectableText(
-                previa.isEmpty ? '(mensagem vazia)' : previa,
-              ),
+          const SizedBox(height: RecorteEspaco.entreBlocos),
+          Text('Prévia', style: RecorteTexto.tituloSecao),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            decoration: BoxDecoration(
+              color: RecorteCores.superficie,
+              border: Border.all(color: RecorteCores.borda),
+              borderRadius: BorderRadius.circular(RecorteRaio.celula),
             ),
+            child: previa.isEmpty
+                ? Text(
+                    '(mensagem vazia)',
+                    style: RecorteTexto.corpo.copyWith(
+                      color: RecorteCores.rotulo,
+                    ),
+                  )
+                : SelectableText(previa, style: RecorteTexto.corpo),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: RecorteEspaco.entreBlocos),
           FilledButton.icon(
             onPressed: _salvar,
             icon: const Icon(Icons.save_outlined),
             label: const Text('Salvar'),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: RecorteEspaco.entreBotoes),
           TextButton.icon(
+            style: TextButton.styleFrom(
+              textStyle: RecorteTexto.botaoDialogo,
+              iconSize: 20,
+            ),
             onPressed: () => _controller.text = modeloMensagemPadrao,
             icon: const Icon(Icons.restore),
             label: const Text('Restaurar padrão'),
