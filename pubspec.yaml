@@ -93,3 +93,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    # Fontes variáveis (OFL, ver assets/fonts/OFL-*.txt), embutidas: o app
+    # funciona offline. O peso vem do eixo `wght` (ver lib/ui/recorte/tipografia.dart).
+    - family: SchibstedGrotesk
+      fonts:
+        - asset: assets/fonts/SchibstedGrotesk-Variable.ttf
+    - family: InstrumentSans
+      fonts:
+        - asset: assets/fonts/InstrumentSans-Variable.ttf
