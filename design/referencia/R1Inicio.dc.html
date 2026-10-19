@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Início (estados)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; display: flex; flex-direction: column; background: #EEF0EC; color: #17181B; font-family: 'Instrument Sans', system-ui, sans-serif; overflow: hidden; box-sizing: border-box">
+
+  <svg aria-hidden="true" width="390" height="190" viewBox="0 0 390 190" style="position: absolute; left: 0; top: 0"><defs><pattern id="r1mesa" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#DDE0D8" stroke-width="1"></path></pattern><linearGradient id="r1fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="#ffffff"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient><mask id="r1mask"><rect width="390" height="190" fill="url(#r1fade)"></rect></mask></defs><rect width="390" height="190" fill="url(#r1mesa)" mask="url(#r1mask)"></rect></svg>
+
+  <header style="position: relative; height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 4px 0 16px">
+    <sc-if value="{{semEmpresa}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; align-items: center; gap: 9px; flex: 1">
+        <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="8" fill="none" stroke="#17181B" stroke-width="1.6"></circle><path d="M13 1v7M13 18v7M1 13h7M18 13h7" stroke="#17181B" stroke-width="1.6"></path><circle cx="13" cy="13" r="3.4" fill="{{brand}}"></circle></svg>
+        <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.03em">stickerflow</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{temEmpresa}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0">
+        <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: {{logoRaio}}; background: {{brand}}; color: {{onBrand}}; display: flex; align-items: center; justify-content: center; font-family: 'Schibsted Grotesk', sans-serif; font-size: 14px; font-weight: 800">{{sigla}}</span>
+        <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{empresa}}</span>
+      </div>
+    </sc-if>
+    <button type="button" aria-label="Menu" style="width: 48px; height: 48px; border: 0; background: {{fundoMenuBtn}}; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #17181B; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="12" cy="19" r="1.8"></circle></svg>
+    </button>
+  </header>
+
+  <div style="position: relative; padding: 14px 16px 20px">
+    <h1 style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 36px; line-height: 40px; font-weight: 800; letter-spacing: -0.035em">Orçamentos</h1>
+  </div>
+
+  <sc-if value="{{ehVazio}}" hint-placeholder-val="{{ false }}">
+    <div style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 40px 140px; text-align: center">
+      <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true"><rect x="14" y="14" width="60" height="60" rx="16" fill="#ffffff" stroke="#CDD0C9"></rect><rect x="6.75" y="6.75" width="74.5" height="74.5" rx="22" fill="none" stroke="#8A8E95" stroke-width="1.5" stroke-dasharray="5 4"></rect><path d="M34 44h20M44 34v20" stroke="#8A8E95" stroke-width="2" stroke-linecap="round"></path></svg>
+      <p style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 700">Nenhum orçamento salvo ainda.</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #4A4E55">Toque em "Novo orçamento" para começar.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehCarregando}}" hint-placeholder-val="{{ false }}">
+    <div role="status" aria-label="Carregando" style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 140px">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="#CDD0C9" stroke-width="3" stroke-dasharray="5 4"></circle><path d="M22 4a18 18 0 0 1 18 18" fill="none" stroke="{{linhaMarca}}" stroke-width="3" stroke-linecap="round"></path></svg>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehErro}}" hint-placeholder-val="{{ false }}">
+    <div role="alert" style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 40px 140px; text-align: center">
+      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><rect x="4.75" y="4.75" width="54.5" height="54.5" rx="16" fill="none" stroke="#B3261E" stroke-width="1.5" stroke-dasharray="5 4"></rect><path d="M32 20v15M32 42v1" stroke="#B3261E" stroke-width="3" stroke-linecap="round"></path></svg>
+      <p style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 700">Não foi possível carregar.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehLista}}" hint-placeholder-val="{{ true }}">
+    <ul style="position: relative; list-style: none; margin: 0 16px; padding: 0; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; overflow: hidden">
+      <sc-for list="{{itens}}" as="it" hint-placeholder-count="6">
+        <li style="margin: 0; {{it.linha}}">
+          <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 16px 11px 12px; min-height: 66px; box-sizing: border-box; color: inherit; text-decoration: none">
+            <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex-shrink: 0"><rect x="6" y="6" width="24" height="24" rx="6" fill="{{it.tokenFill}}"></rect><rect x="2.75" y="2.75" width="30.5" height="30.5" rx="9" fill="none" stroke="{{it.tokenLine}}" stroke-width="1.5" stroke-dasharray="3.5 3"></rect></svg>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 16px; line-height: 21px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{it.titulo}}</span>
+              <span style="font-size: 13px; line-height: 17px; color: #5A5E66; font-variant-numeric: tabular-nums">{{it.data}} · {{it.tipo}}</span>
+            </span>
+            <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums">{{it.preco}}</span>
+          </a>
+        </li>
+      </sc-for>
+    </ul>
+  </sc-if>
+
+  <button type="button" style="position: absolute; right: 22px; bottom: {{fabBottom}}; height: 56px; padding: 0 22px 0 18px; border: 0; border-radius: 14px; background: {{brand}}; color: {{onBrand}}; outline: 1.5px dashed #17181B; outline-offset: 4px; box-shadow: 0 6px 14px rgba(23, 24, 27, 0.22); display: flex; align-items: center; gap: 10px; font-family: 'Schibsted Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    Novo orçamento
+  </button>
+
+  <sc-if value="{{ehMenu}}" hint-placeholder-val="{{ false }}">
+    <div role="menu" aria-label="Menu" style="position: absolute; top: 58px; right: 12px; width: 252px; padding: 6px; box-sizing: border-box; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 14px; box-shadow: 0 10px 28px rgba(23, 24, 27, 0.2); display: flex; flex-direction: column">
+      <button type="button" role="menuitem" style="height: 52px; border: 0; background: transparent; border-radius: 10px; display: flex; align-items: center; gap: 14px; padding: 0 12px; font-family: inherit; font-size: 15px; font-weight: 600; color: #17181B; text-align: left; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>
+        Materiais
+      </button>
+      <button type="button" role="menuitem" style="height: 52px; border: 0; background: transparent; border-radius: 10px; display: flex; align-items: center; gap: 14px; padding: 0 12px; font-family: inherit; font-size: 15px; font-weight: 600; color: #17181B; text-align: left; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v9h16v-9"></path><path d="M3 5h18l-1 5a3 3 0 0 1-5.5 1A3 3 0 0 1 12 13a3 3 0 0 1-2.5-2A3 3 0 0 1 4 10z"></path><path d="M10 19v-4h4v4"></path></svg>
+        Nome da empresa
+      </button>
+      <button type="button" role="menuitem" style="height: 52px; border: 0; background: transparent; border-radius: 10px; display: flex; align-items: center; gap: 14px; padding: 0 12px; font-family: inherit; font-size: 15px; font-weight: 600; color: #17181B; text-align: left; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path><path d="M8 9h8M8 12h5"></path></svg>
+        Mensagem do WhatsApp
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{temAviso}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 24px; min-height: 52px; box-sizing: border-box; padding: 14px 16px; background: #17181B; color: #ffffff; border-radius: 12px; box-shadow: 0 6px 16px rgba(23, 24, 27, 0.25); display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 20px">
+      <sc-if value="{{avisoAlerta}}" hint-placeholder-val="{{ false }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F2C94C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M12 3.5 2.5 20h19L12 3.5z"></path><path d="M12 10v4.5M12 17.2v.3"></path></svg>
+      </sc-if>
+      <sc-if value="{{avisoOk}}" hint-placeholder-val="{{ true }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9BE0BC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M5 12.5 10 17 19 7"></path></svg>
+      </sc-if>
+      <span>{{avisoTexto}}</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["vazio","carregando","erro","lista","menu","salvo","falhaWhats","msgSalva"],"default":"vazio"},"brand":{"editor":"color","default":"#C2185B","section":"Marca da empresa","options":["#C2185B","#F2C200","#6D28D9","#1F6F5C"]},"empresa":{"editor":"text","default":"","section":"Marca da empresa"},"sigla":{"editor":"text","default":"","section":"Marca da empresa"},"forma":{"editor":"enum","options":["quadrado","circulo"],"default":"quadrado","section":"Marca da empresa"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  hx(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join(''); var n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  he(a) { return '#' + a.map(function (v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? '0' + s : s; }).join(''); }
+  mix(a, b, t) { var x = this.hx(a), y = this.hx(b); return this.he(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  lum(h) { var c = this.hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { var x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  ink(c, bg, alvo) { var t = 0, r = c; while (this.cr(r, bg) < alvo && t < 1) { t += 0.05; r = this.mix(c, '#000000', t); } return r; }
+  renderVals() {
+    var estado = this.props.estado || 'vazio';
+    var brand = this.props.brand || '#C2185B';
+    var empresa = String(this.props.empresa || '').trim();
+    var tint = this.mix(brand, '#ffffff', 0.72);
+    var linhaMarca = this.ink(brand, '#ffffff', 3);
+    var base = [
+      ['Adesivo de vitrine', '19/10/2026 14:32', 'Terceirizada', 'R$ 120,00'],
+      ['Vinil Branco', '19/10/2026 10:05', 'Própria', 'R$ 100,00'],
+      ['Rótulos pote de mel', '18/10/2026 16:47', 'Própria', 'R$ 87,50'],
+      ['Vinil Perfurado', '17/10/2026 09:12', 'Própria', 'R$ 236,00'],
+      ['Placa fachada ACM', '16/10/2026 18:20', 'Terceirizada', 'R$ 640,00'],
+      ['Vinil Transparente', '15/10/2026 11:40', 'Própria', 'R$ 54,00']
+    ];
+    var avisos = {
+      salvo: ['Orçamento salvo.', false],
+      falhaWhats: ['Orçamento salvo, mas não foi possível abrir o WhatsApp.', true],
+      msgSalva: ['Mensagem salva.', false]
+    };
+    var aviso = avisos[estado];
+    var lista = ['lista', 'menu', 'salvo', 'falhaWhats', 'msgSalva'].indexOf(estado) >= 0;
+    return {
+      brand: brand,
+      onBrand: this.cr(brand, '#ffffff') >= this.cr(brand, '#17181B') ? '#ffffff' : '#17181B',
+      linhaMarca: linhaMarca,
+      empresa: empresa,
+      sigla: String(this.props.sigla || empresa.slice(0, 2)).toUpperCase(),
+      temEmpresa: empresa.length > 0, semEmpresa: empresa.length === 0,
+      logoRaio: this.props.forma === 'circulo' ? '50%' : '9px',
+      ehVazio: estado === 'vazio', ehErro: estado === 'erro', ehCarregando: estado === 'carregando', ehLista: lista, ehMenu: estado === 'menu',
+      fundoMenuBtn: estado === 'menu' ? '#E2E5DF' : 'transparent',
+      temAviso: !!aviso, avisoTexto: aviso ? aviso[0] : '', avisoAlerta: !!(aviso && aviso[1]), avisoOk: !!(aviso && !aviso[1]),
+      fabBottom: aviso ? (aviso[1] ? '112px' : '92px') : '32px',
+      itens: base.map(function (r, i) {
+        var propria = r[2] === 'Própria';
+        return {
+          titulo: r[0], data: r[1], tipo: r[2], preco: r[3],
+          linha: i === 0 ? '' : 'border-top: 1px solid #E4E6E1',
+          tokenFill: propria ? tint : 'transparent',
+          tokenLine: propria ? linhaMarca : '#8A8E95'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

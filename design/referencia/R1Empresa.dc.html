@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Diálogo Nome da empresa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #EEF0EC; font-family: 'Instrument Sans', system-ui, sans-serif; color: #17181B">
+  <div style="position: absolute; left: 0; top: 0">
+    <dc-import name="R1Inicio" estado="lista" hint-size="390px,844px"></dc-import>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(23, 24, 27, 0.48)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="r1e-t" style="position: absolute; left: 24px; right: 24px; top: 168px; background: #ffffff; border-radius: 20px; padding: 24px 24px 18px; box-shadow: 0 18px 40px rgba(23, 24, 27, 0.3); display: flex; flex-direction: column; gap: 16px">
+    <h2 id="r1e-t" style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 22px; line-height: 28px; font-weight: 800; letter-spacing: -0.03em">Nome da empresa</h2>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label style="display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 14px; box-sizing: border-box; border-radius: 12px; background: #ffffff; border: 1px solid #CDD0C9; box-shadow: inset 0 0 0 2px {{linhaMarca}}; cursor: text">
+        <input type="text" value="{{nome}}" aria-describedby="r1e-h" style="width: auto; flex: 0 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: inherit; font-size: 17px; font-weight: 500; color: #17181B" size="16">
+        <span aria-hidden="true" style="width: 1.5px; height: 22px; background: #17181B"></span>
+      </label>
+      <p id="r1e-h" style="margin: 0 4px; font-size: 12px; line-height: 16px; color: #5A5E66">Aparece no topo da mensagem de WhatsApp.</p>
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px">
+      <button type="button" style="height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: transparent; color: #17181B; font-family: 'Schibsted Grotesk', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer">Cancelar</button>
+      <button type="button" style="height: 44px; padding: 0 20px; border: 0; border-radius: 12px; background: {{brand}}; color: {{onBrand}}; font-family: 'Schibsted Grotesk', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer">Salvar</button>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 0; bottom: 0">
+    <dc-import name="RTeclado" tipo="texto" hint-size="390px,250px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"nome":{"editor":"text","default":"Adesivos JJ"},"brand":{"editor":"color","default":"#C2185B","section":"Marca da empresa"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  hx(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join(''); var n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  he(a) { return '#' + a.map(function (v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? '0' + s : s; }).join(''); }
+  mix(a, b, t) { var x = this.hx(a), y = this.hx(b); return this.he(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  lum(h) { var c = this.hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { var x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  ink(c, bg, alvo) { var t = 0, r = c; while (this.cr(r, bg) < alvo && t < 1) { t += 0.05; r = this.mix(c, '#000000', t); } return r; }
+  renderVals() {
+    var brand = this.props.brand || '#C2185B';
+    return {
+      nome: this.props.nome ?? 'Adesivos JJ', linhaMarca: this.ink(brand, '#ffffff', 3), brand: brand,
+      onBrand: this.cr(brand, '#ffffff') >= this.cr(brand, '#17181B') ? '#ffffff' : '#17181B'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Teclado (ilustração)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div aria-hidden="true" style="width: 390px; height: 250px; box-sizing: border-box; background: #DADDD6; padding: 8px 5px 30px; font-family: 'Instrument Sans', system-ui, sans-serif; color: #17181B">
+  <sc-if value="{{numerico}}" hint-placeholder-val="{{ true }}">
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 47px; gap: 6px; font-size: 22px">
+      <sc-for list="{{teclasNum}}" as="t" hint-placeholder-count="16">
+        <div style="border-radius: 8px; display: flex; align-items: center; justify-content: center; {{t.cor}}">{{t.r}}</div>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{texto}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 7px; font-size: 18px">
+      <sc-for list="{{linhas}}" as="l" hint-placeholder-count="4">
+        <div style="display: flex; justify-content: center; gap: 5px">
+          <sc-for list="{{l.teclas}}" as="t" hint-placeholder-count="10">
+            <div style="height: 42px; border-radius: 7px; display: flex; align-items: center; justify-content: center; {{t.cor}}">{{t.r}}</div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tipo":{"editor":"enum","options":["numerico","texto"],"default":"numerico"},"$preview":{"width":390,"height":250}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var claro = 'background: #FBFBF9; ', escuro = 'background: #C3C7BF; ', acao = 'background: #17181B; color: #ffffff; ';
+    var num = ['1', '2', '3', '−', '4', '5', '6', '␣', '7', '8', '9', '⌫', ',', '0', '.', '✓'];
+    var teclasNum = num.map(function (r) {
+      var cor = r === '✓' ? acao : (['−', '␣', '⌫'].indexOf(r) >= 0 ? escuro : claro);
+      return { r: r, cor: cor };
+    });
+    function linha(s, extra) {
+      var t = s.split('').map(function (r) { return { r: r, cor: claro + 'width: 33px' }; });
+      return { teclas: t };
+    }
+    var l3 = linha('zxcvbnm');
+    l3.teclas.unshift({ r: '⇧', cor: escuro + 'width: 44px' });
+    l3.teclas.push({ r: '⌫', cor: escuro + 'width: 44px' });
+    var l4 = { teclas: [{ r: '?123', cor: escuro + 'width: 56px; font-size: 14px' }, { r: ',', cor: escuro + 'width: 33px' }, { r: 'espaço', cor: claro + 'width: 170px; font-size: 14px' }, { r: '.', cor: escuro + 'width: 33px' }, { r: '↵', cor: acao + 'width: 56px' }] };
+    var tipo = this.props.tipo || 'numerico';
+    return {
+      numerico: tipo === 'numerico', texto: tipo === 'texto',
+      teclasNum: teclasNum,
+      linhas: [linha('qwertyuiop'), linha('asdfghjkl'), l3, l4]
+    };
+  }
+}
+</script>
+</body>
+</html>

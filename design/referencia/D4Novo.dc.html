@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Recorte — Novo orçamento</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #EEF0EC; color: #17181B; font-family: 'Instrument Sans', system-ui, sans-serif; overflow: hidden; box-sizing: border-box">
+
+  <header style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 4px">
+    <button type="button" aria-label="Voltar" style="width: 48px; height: 48px; border: 0; background: transparent; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #17181B; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"></path></svg>
+    </button>
+    <h1 style="margin: 0; flex: 1; font-family: 'Schibsted Grotesk', sans-serif; font-size: 21px; line-height: 28px; font-weight: 800; letter-spacing: -0.025em">Novo orçamento</h1>
+    <button type="button" aria-label="Materiais" style="width: 48px; height: 48px; border: 0; background: transparent; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #17181B; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+
+    <div role="group" aria-label="Produção" style="flex-shrink: 0; height: 52px; box-sizing: border-box; padding: 4px; background: #E2E5DF; border-radius: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px">
+      <button type="button" aria-pressed="true" style="border: 0; border-radius: 9px; background: #ffffff; box-shadow: 0 1px 3px rgba(23, 24, 27, 0.2); color: #17181B; font-family: inherit; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+        <span aria-hidden="true" style="width: 18px; height: 18px; border-radius: 9px; background: {{brand}}; color: {{onBrand}}; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"></path></svg></span>
+        Própria
+      </button>
+      <button type="button" aria-pressed="false" style="border: 0; border-radius: 9px; background: transparent; color: #4A4E55; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Terceirizada</button>
+    </div>
+
+    <button type="button" aria-haspopup="listbox" aria-label="Material: Vinil Branco, R$ 50,00 por metro" style="flex-shrink: 0; height: 66px; border: 1px solid #CDD0C9; border-radius: 12px; background: #ffffff; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 16px; text-align: left; font-family: inherit; color: inherit; cursor: pointer">
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+        <span style="font-size: 12px; line-height: 16px; font-weight: 600; color: #5A5E66">Material</span>
+        <span style="font-size: 17px; line-height: 22px; font-weight: 600">Vinil Branco</span>
+      </span>
+      <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #5A5E66; font-variant-numeric: tabular-nums">R$ 50,00 / m</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#17181B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+    </button>
+
+    <div style="flex-shrink: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; overflow: hidden">
+      <label style="display: flex; flex-direction: column; gap: 2px; padding: 10px 16px; min-height: 76px; box-sizing: border-box; cursor: text">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: #5A5E66">
+          <svg width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1v8M15 1v8M1 5h14M4 2.5 1 5l3 2.5M12 2.5 15 5l-3 2.5" fill="none" stroke="#5A5E66" stroke-width="1.2"></path></svg>
+          Comprimento
+        </span>
+        <span style="display: flex; align-items: baseline; gap: 5px">
+          <input type="text" inputmode="decimal" value="1,00" style="width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 26px; line-height: 34px; font-weight: 600; color: #17181B; font-variant-numeric: tabular-nums">
+          <span style="font-size: 15px; font-weight: 600; color: #5A5E66">m</span>
+        </span>
+      </label>
+      <label style="display: flex; flex-direction: column; gap: 2px; padding: 10px 16px; min-height: 76px; box-sizing: border-box; border-left: 1px solid #E4E6E1; cursor: text">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: #5A5E66">
+          <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true"><path d="M1 1h8M1 15h8M5 1v14M2.5 4 5 1l2.5 3M2.5 12 5 15l2.5-3" fill="none" stroke="#5A5E66" stroke-width="1.2"></path></svg>
+          Largura
+        </span>
+        <span style="display: flex; align-items: baseline; gap: 5px">
+          <input type="text" inputmode="decimal" value="1,00" style="width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 26px; line-height: 34px; font-weight: 600; color: #17181B; font-variant-numeric: tabular-nums">
+          <span style="font-size: 15px; font-weight: 600; color: #5A5E66">m</span>
+        </span>
+      </label>
+    </div>
+
+    <div style="flex-shrink: 0; display: flex; flex-direction: column; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px">
+      <label style="display: flex; flex-direction: column; gap: 2px; padding: 10px 16px; min-height: 72px; box-sizing: border-box; border-radius: 11px 11px 0 0; box-shadow: inset 0 0 0 2px {{linhaMarca}}; cursor: text">
+        <span style="font-size: 12px; line-height: 16px; font-weight: 700; color: {{textoMarca}}">Acréscimo</span>
+        <span style="display: flex; align-items: baseline; gap: 5px">
+          <input type="text" inputmode="decimal" value="100" style="width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: 'Schibsted Grotesk', sans-serif; font-size: 26px; line-height: 34px; font-weight: 600; color: #17181B; font-variant-numeric: tabular-nums">
+          <span style="font-size: 15px; font-weight: 600; color: #5A5E66">%</span>
+        </span>
+      </label>
+      <label style="display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 58px; border-top: 1px solid #E4E6E1; cursor: text">
+        <span style="font-size: 14px; font-weight: 600; color: #5A5E66; white-space: nowrap">Descrição</span>
+        <input type="text" value="" placeholder="opcional" style="flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: inherit; font-size: 16px; color: #17181B">
+      </label>
+    </div>
+
+    <section aria-label="Resultado" style="flex-shrink: 0; display: flex; flex-direction: column; gap: 12px">
+      <dl style="margin: 0; padding: 12px 16px; background: #ffffff; border: 1px solid #CDD0C9; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 20px">
+        <div style="display: flex; align-items: baseline; gap: 8px"><dt style="color: #4A4E55">Custo</dt><span aria-hidden="true" style="flex: 1; border-bottom: 1.5px dotted #B4B8B0"></span><dd style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-weight: 600; font-variant-numeric: tabular-nums">R$ 50,00</dd></div>
+        <div style="display: flex; align-items: baseline; gap: 8px"><dt style="color: #4A4E55">Acréscimo (100%)</dt><span aria-hidden="true" style="flex: 1; border-bottom: 1.5px dotted #B4B8B0"></span><dd style="margin: 0; font-family: 'Schibsted Grotesk', sans-serif; font-weight: 600; font-variant-numeric: tabular-nums">R$ 50,00</dd></div>
+      </dl>
+      <div style="position: relative; margin: 5px; padding: 14px 18px; border-radius: 14px; background: {{brand}}; color: {{onBrand}}; outline: 1.5px dashed #17181B; outline-offset: 4px; box-shadow: 0 6px 14px rgba(23, 24, 27, 0.18); display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <span style="font-size: 13px; line-height: 18px; font-weight: 700">Preço final</span>
+        <span style="font-family: 'Schibsted Grotesk', sans-serif; font-size: 38px; line-height: 46px; font-weight: 800; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; padding-right: 10px">R$ 100,00</span>
+        <span aria-hidden="true" style="position: absolute; right: 0; top: 0; width: 26px; height: 26px; background: #EEF0EC; clip-path: polygon(0 0, 100% 0, 100% 100%); border-top-right-radius: 14px"></span>
+        <span aria-hidden="true" style="position: absolute; right: 0; top: 0; width: 26px; height: 26px; background: {{dobra}}; clip-path: polygon(0 0, 100% 100%, 0 100%); border-bottom-left-radius: 5px"></span>
+      </div>
+    </section>
+
+    <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px">
+      <button type="button" style="height: 52px; border: 0; border-radius: 12px; background: #17181B; color: #ffffff; font-family: 'Schibsted Grotesk', sans-serif; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 4v5h7V4"></path><circle cx="12" cy="15" r="2.5"></circle></svg>
+        Salvar
+      </button>
+      <button type="button" style="height: 52px; border: 1px solid #17181B; border-radius: 12px; background: #ffffff; color: #17181B; font-family: 'Schibsted Grotesk', sans-serif; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 21 12 4 4l2 8-2 8z"></path><path d="M6 12h7"></path></svg>
+        Salvar e enviar por WhatsApp
+      </button>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"brand":{"editor":"color","default":"#C2185B","section":"Marca da empresa","options":["#C2185B","#F2C200","#6D28D9","#1F6F5C"]},"empresa":{"editor":"text","default":"","section":"Marca da empresa"},"sigla":{"editor":"text","default":"","section":"Marca da empresa"},"forma":{"editor":"enum","options":["quadrado","circulo"],"default":"quadrado","section":"Marca da empresa"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  hx(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join(''); var n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  he(a) { return '#' + a.map(function (v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? '0' + s : s; }).join(''); }
+  mix(a, b, t) { var x = this.hx(a), y = this.hx(b); return this.he(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  lum(h) { var c = this.hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { var x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  ink(c, bg, alvo) { var t = 0, r = c; while (this.cr(r, bg) < alvo && t < 1) { t += 0.05; r = this.mix(c, '#000000', t); } return r; }
+  renderVals() {
+    var brand = this.props.brand || '#C2185B';
+    return {
+      brand: brand,
+      onBrand: this.cr(brand, '#ffffff') >= this.cr(brand, '#17181B') ? '#ffffff' : '#17181B',
+      linhaMarca: this.ink(brand, '#ffffff', 3),
+      textoMarca: this.ink(brand, '#ffffff', 4.5),
+      dobra: this.mix(brand, '#ffffff', 0.5)
+    };
+  }
+}
+</script>
+</body>
+</html>
