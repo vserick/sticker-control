@@ -37,7 +37,7 @@ Future<ServicosFake> _abrir(
 }
 
 Future<void> _digitar(WidgetTester tester, String rotulo, String texto) async {
-  await tester.enterText(find.widgetWithText(TextField, rotulo), texto);
+  await tester.enterText(campoDe(rotulo), texto);
   await tester.pump();
 }
 
@@ -139,7 +139,7 @@ void main() {
     await _digitar(tester, 'Comprimento', '2');
     await _digitar(tester, 'Largura', '1');
     await _digitar(tester, 'Acréscimo', '50');
-    await _digitar(tester, 'Descrição (opcional)', 'Adesivo de porta');
+    await _digitar(tester, 'Descrição', 'Adesivo de porta');
 
     await tester.ensureVisible(botao('Salvar'));
     await tester.tap(botao('Salvar'));
@@ -164,7 +164,7 @@ void main() {
     await _digitar(tester, 'Comprimento', '2');
     await _digitar(tester, 'Largura', '1,1');
     await _digitar(tester, 'Acréscimo', '50');
-    await _digitar(tester, 'Descrição (opcional)', 'Placa');
+    await _digitar(tester, 'Descrição', 'Placa');
     return fake;
   }
 

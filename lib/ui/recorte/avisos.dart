@@ -39,6 +39,12 @@ class AvisoAmarelo extends StatelessWidget {
 /// alerta (falha). O botão flutuante sobe sozinho, pois o SnackBar é flutuante.
 SnackBar avisoRodape(String texto, {bool sucesso = true}) {
   return SnackBar(
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: RecorteCores.grafite,
+    elevation: 6,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(RecorteRaio.celula),
+    ),
     margin: const EdgeInsets.all(16),
     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
     content: Row(
@@ -49,7 +55,7 @@ SnackBar avisoRodape(String texto, {bool sucesso = true}) {
           color: sucesso ? RecorteCores.okEscuro : RecorteCores.alertaEscuro,
         ),
         const SizedBox(width: 12),
-        Expanded(child: Text(texto)),
+        Expanded(child: Text(texto, style: RecorteTexto.avisoRodape)),
       ],
     ),
   );

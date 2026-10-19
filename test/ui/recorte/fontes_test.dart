@@ -1,19 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sticker_control/ui/recorte/tipografia.dart';
 
+import '../../support/fontes.dart';
+
 /// As fontes são variáveis: confirma que cada peso do recorte.md renderiza de
 /// fato diferente (a largura do texto cresce com o eixo `wght`).
-Future<void> _carregar(String familia, String arquivo) async {
-  final dados = File('assets/fonts/$arquivo').readAsBytesSync();
-  final loader = FontLoader(familia)
-    ..addFont(Future.value(ByteData.sublistView(dados)));
-  await loader.load();
-}
-
 double _largura(TextStyle estilo) {
   final p = TextPainter(
     text: TextSpan(text: 'Orçamento R\$ 1.234,56 mm', style: estilo),
@@ -25,8 +17,7 @@ double _largura(TextStyle estilo) {
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    await _carregar(familiaTitulos, 'SchibstedGrotesk-Variable.ttf');
-    await _carregar(familiaCorpo, 'InstrumentSans-Variable.ttf');
+    await carregarFontesDoApp();
   });
 
   void conferir(String familia, List<int> pesos) {
