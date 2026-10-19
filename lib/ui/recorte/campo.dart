@@ -28,6 +28,9 @@ class CampoInterno extends StatefulWidget {
   /// `true`: rótulo à esquerda e campo à direita, numa linha só (ex.: Descrição).
   final bool linha;
   final double? alturaMinima;
+
+  /// Substitui o estilo do valor digitado.
+  final TextStyle? estiloValor;
   final int? minLinhas;
   final int? maxLinhas;
   final TextCapitalization capitalizacao;
@@ -51,6 +54,7 @@ class CampoInterno extends StatefulWidget {
     this.grande = true,
     this.linha = false,
     this.alturaMinima,
+    this.estiloValor,
     this.minLinhas,
     this.maxLinhas,
     this.capitalizacao = TextCapitalization.none,
@@ -100,11 +104,13 @@ class _CampoInternoState extends State<CampoInterno> {
       fontVariations: [FontVariation.weight(focado ? 700 : 600)],
     );
 
-    final estiloValor = w.grande
-        ? RecorteTexto.valorCelula
-        : (w.linha
-              ? RecorteTexto.corpo.copyWith(fontSize: 16)
-              : RecorteTexto.valorTexto);
+    final estiloValor =
+        w.estiloValor ??
+        (w.grande
+            ? RecorteTexto.valorCelula
+            : (w.linha
+                  ? RecorteTexto.corpo.copyWith(fontSize: 16)
+                  : RecorteTexto.valorTexto));
 
     final campo = TextField(
       controller: w.controller,
@@ -136,11 +142,15 @@ class _CampoInternoState extends State<CampoInterno> {
     if (w.linha) {
       corpo = Row(
         children: [
-          Text(
-            w.rotulo,
-            style: RecorteTexto.rotuloLinha.copyWith(color: rotuloEstilo.color),
-          ),
-          const SizedBox(width: 12),
+          if (w.rotulo.isNotEmpty) ...[
+            Text(
+              w.rotulo,
+              style: RecorteTexto.rotuloLinha.copyWith(
+                color: rotuloEstilo.color,
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
           Expanded(child: campo),
         ],
       );
@@ -295,6 +305,11 @@ class CampoRecorte extends StatelessWidget {
   final String? erro;
   final String? ajuda;
   final bool grande;
+
+  /// Rótulo à esquerda e campo à direita (vazio: campo sem rótulo).
+  final bool linha;
+  final String? rotuloSemantico;
+  final TextStyle? estiloValor;
   final int? minLinhas;
   final int? maxLinhas;
   final double? alturaMinima;
@@ -317,6 +332,9 @@ class CampoRecorte extends StatelessWidget {
     this.erro,
     this.ajuda,
     this.grande = true,
+    this.linha = false,
+    this.rotuloSemantico,
+    this.estiloValor,
     this.minLinhas,
     this.maxLinhas,
     this.alturaMinima,
@@ -343,6 +361,9 @@ class CampoRecorte extends StatelessWidget {
           placeholder: placeholder,
           erro: mensagem != null,
           grande: grande,
+          linha: linha,
+          rotuloSemantico: rotuloSemantico,
+          estiloValor: estiloValor,
           alturaMinima: alturaMinima,
           minLinhas: minLinhas,
           maxLinhas: maxLinhas,
