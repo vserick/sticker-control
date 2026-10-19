@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sticker_control/logic/orcamento.dart';
+import 'package:sticker_control/ui/historico/historico_page.dart';
 import 'package:sticker_control/ui/orcamento/novo_orcamento_page.dart';
 import 'package:sticker_control/ui/recorte/tema.dart';
 import 'package:sticker_control/ui/recorte/tipografia.dart';
@@ -88,6 +90,56 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(campoDe('Valor do fornecedor'), '1234567,89');
     await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Início e Detalhe cabem em 390 px, com título e valor longos', (
+    tester,
+  ) async {
+    usarCelular(tester);
+    final fake = ServicosFake();
+    await fake.orcamentos.salvar(
+      const RascunhoOrcamento(
+        tipo: TipoProducao.propria,
+        descricao: 'Adesivo de vitrine com recorte especial para loja grande',
+        larguraMm: 1250,
+        comprimentoMm: 20000,
+        materialNome: 'Vinil Branco',
+        precoPorMetroCentavos: 5000,
+        custoCentavos: 123456789,
+        acrescimoBp: 5000,
+        finalCentavos: 185185183,
+      ),
+    );
+    await fake.orcamentos.salvar(
+      const RascunhoOrcamento(
+        tipo: TipoProducao.terceirizada,
+        fornecedorCentavos: 8000,
+        custoCentavos: 8000,
+        acrescimoBp: 5000,
+        finalCentavos: 12000,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: construirTema(),
+        home: HistoricoPage(servicos: fake.servicos),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Sem descrição'), findsOneWidget);
+
+    await tester.tap(find.textContaining('Adesivo de vitrine'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Preço final'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sem descrição'));
+    await tester.pumpAndSettle();
+    expect(find.text('Fornecedor'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

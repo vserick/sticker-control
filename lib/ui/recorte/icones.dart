@@ -115,20 +115,27 @@ class _FichaPainter extends CustomPainter {
 class FichaModalidade extends StatelessWidget {
   final bool propria;
   final IconData? icone;
+  final double tamanho;
 
-  const FichaModalidade({super.key, required this.propria, this.icone});
+  const FichaModalidade({
+    super.key,
+    required this.propria,
+    this.icone,
+    this.tamanho = 36,
+  });
 
   /// Ficha de material: igual à "Própria", com o ícone de camadas ao centro.
   const FichaModalidade.material({super.key})
     : propria = true,
-      icone = Icons.layers_outlined;
+      icone = Icons.layers_outlined,
+      tamanho = 36;
 
   @override
   Widget build(BuildContext context) {
     final marca = context.marca;
     return ExcludeSemantics(
       child: SizedBox.square(
-        dimension: 36,
+        dimension: tamanho,
         child: CustomPaint(
           painter: _FichaPainter(
             preenchimento: propria ? marca.brandTint : null,
@@ -139,7 +146,7 @@ class FichaModalidade extends StatelessWidget {
               : Center(
                   child: Icon(
                     icone,
-                    size: 16,
+                    size: 16 * tamanho / 36,
                     color: propria ? marca.brandTexto : RecorteCores.rotulo,
                   ),
                 ),
