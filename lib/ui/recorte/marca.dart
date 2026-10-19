@@ -62,7 +62,11 @@ class RecorteMarca extends ThemeExtension<RecorteMarca> {
   }
 }
 
+final _marcaPadrao = RecorteMarca.de(corMarcaPadrao);
+
 extension RecorteContext on BuildContext {
-  /// Marca atual do tema.
-  RecorteMarca get marca => Theme.of(this).extension<RecorteMarca>()!;
+  /// Marca atual do tema. Sem a extensão no tema (ex.: um `MaterialApp` de
+  /// teste sem [construirTema]), vale a cor padrão.
+  RecorteMarca get marca =>
+      Theme.of(this).extension<RecorteMarca>() ?? _marcaPadrao;
 }

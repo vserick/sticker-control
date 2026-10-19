@@ -7,6 +7,16 @@ import '../../servicos.dart';
 import '../materiais/materiais_page.dart';
 import '../mensagem/modelo_mensagem_page.dart';
 import '../orcamento/novo_orcamento_page.dart';
+import '../recorte/botoes.dart';
+import '../recorte/campo.dart';
+import '../recorte/estados.dart';
+import '../recorte/grade_mesa.dart';
+import '../recorte/icones.dart';
+import '../recorte/lista_bloco.dart';
+import '../recorte/logotipo.dart';
+import '../recorte/menu.dart';
+import '../recorte/tipografia.dart';
+import '../recorte/tokens.dart';
 import 'detalhe_orcamento_page.dart';
 
 enum _OpcaoMenu { materiais, empresa, mensagem }
@@ -69,91 +79,111 @@ class _HistoricoPageState extends State<HistoricoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Orçamentos'),
-        actions: [
-          PopupMenuButton<_OpcaoMenu>(
-            tooltip: 'Menu',
-            onSelected: _selecionar,
-            itemBuilder: (_) => const [
-              PopupMenuItem(
-                value: _OpcaoMenu.materiais,
-                child: ListTile(
-                  leading: Icon(Icons.layers_outlined),
-                  title: Text('Materiais'),
-                ),
-              ),
-              PopupMenuItem(
-                value: _OpcaoMenu.empresa,
-                child: ListTile(
-                  leading: Icon(Icons.storefront_outlined),
-                  title: Text('Nome da empresa'),
-                ),
-              ),
-              PopupMenuItem(
-                value: _OpcaoMenu.mensagem,
-                child: ListTile(
-                  leading: Icon(Icons.chat_outlined),
-                  title: Text('Mensagem do WhatsApp'),
-                ),
-              ),
-            ],
+      floatingActionButton: BotaoFlutuanteRecorte(
+        rotulo: 'Novo orçamento',
+        onPressed: () => _abrir(NovoOrcamentoPage(servicos: widget.servicos)),
+      ),
+      body: Stack(
+        children: [
+          const Positioned(top: 0, left: 0, right: 0, child: GradeMesa()),
+          StreamBuilder<List<Orcamento>>(
+            stream: _orcamentos,
+            builder: (context, snapshot) {
+              final orcamentos = snapshot.data;
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    pinned: true,
+                    automaticallyImplyLeading: false,
+                    titleSpacing: RecorteEspaco.margemTela,
+                    title: const LogotipoTopo(),
+                    actions: [
+                      MenuRecorte<_OpcaoMenu>(
+                        onSelected: _selecionar,
+                        itens: (_) => [
+                          itemMenuRecorte(
+                            valor: _OpcaoMenu.materiais,
+                            icone: Icons.layers_outlined,
+                            texto: 'Materiais',
+                          ),
+                          itemMenuRecorte(
+                            valor: _OpcaoMenu.empresa,
+                            icone: Icons.storefront_outlined,
+                            texto: 'Nome da empresa',
+                          ),
+                          itemMenuRecorte(
+                            valor: _OpcaoMenu.mensagem,
+                            icone: Icons.chat_outlined,
+                            texto: 'Mensagem do WhatsApp',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        RecorteEspaco.margemTela,
+                        14,
+                        RecorteEspaco.margemTela,
+                        20,
+                      ),
+                      child: Text(
+                        'Orçamentos',
+                        style: RecorteTexto.tituloInicio,
+                      ),
+                    ),
+                  ),
+                  if (orcamentos == null)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: CarregandoCentralizado(),
+                    )
+                  else if (orcamentos.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EstadoVazio(
+                        icone: Icons.add,
+                        titulo: 'Nenhum orçamento salvo ainda.',
+                        texto: 'Toque em "Novo orçamento" para começar.',
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(
+                        RecorteEspaco.margemTela,
+                        0,
+                        RecorteEspaco.margemTela,
+                        96,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: ListaBloco(
+                          itens: [
+                            for (final o in orcamentos) _itemOrcamento(o),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _abrir(NovoOrcamentoPage(servicos: widget.servicos)),
-        icon: const Icon(Icons.add),
-        label: const Text('Novo orçamento'),
-      ),
-      body: StreamBuilder<List<Orcamento>>(
-        stream: _orcamentos,
-        builder: (context, snapshot) {
-          final orcamentos = snapshot.data;
-          if (orcamentos == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (orcamentos.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text(
-                  'Nenhum orçamento salvo ainda.\n'
-                  'Toque em "Novo orçamento" para começar.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 88),
-            itemCount: orcamentos.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
-            itemBuilder: (context, i) {
-              final o = orcamentos[i];
-              final proprio = o.tipo == TipoProducao.propria;
-              return ListTile(
-                title: Text(
-                  o.descricao ?? o.materialNome ?? 'Sem descrição',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  '${formatarDataHora(o.criadoEm)} · '
-                  '${proprio ? 'Própria' : 'Terceirizada'}',
-                ),
-                trailing: Text(
-                  formatarBrl(o.finalCentavos),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                onTap: () => _abrir(
-                  DetalheOrcamentoPage(servicos: widget.servicos, orcamento: o),
-                ),
-              );
-            },
-          );
-        },
-      ),
+    );
+  }
+
+  Widget _itemOrcamento(Orcamento o) {
+    final proprio = o.tipo == TipoProducao.propria;
+    return ItemListaBloco(
+      ficha: FichaModalidade(propria: proprio),
+      titulo: o.descricao ?? o.materialNome ?? 'Sem descrição',
+      metadado:
+          '${formatarDataHora(o.criadoEm)} · '
+          '${proprio ? 'Própria' : 'Terceirizada'}',
+      valor: formatarBrl(o.finalCentavos),
+      onTap: () =>
+          _abrir(DetalheOrcamentoPage(servicos: widget.servicos, orcamento: o)),
     );
   }
 }
@@ -183,22 +213,25 @@ class _DialogoEmpresaState extends State<_DialogoEmpresa> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Nome da empresa'),
-      content: TextField(
+      content: CampoRecorte(
+        rotulo: '',
+        rotuloSemantico: 'Nome da empresa',
         controller: _controller,
         autofocus: true,
-        decoration: const InputDecoration(
-          helperText: 'Aparece no topo da mensagem de WhatsApp.',
-          border: OutlineInputBorder(),
+        linha: true,
+        grande: false,
+        alturaMinima: 56,
+        estiloValor: RecorteTexto.valorTexto.copyWith(
+          fontWeight: FontWeight.w500,
+          fontVariations: [FontVariation.weight(500)],
         ),
+        ajuda: 'Aparece no topo da mensagem de WhatsApp.',
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
+        BotaoCancelarDialogo(onPressed: () => Navigator.of(context).pop()),
+        BotaoMarcaDialogo(
+          texto: 'Salvar',
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Salvar'),
         ),
       ],
     );

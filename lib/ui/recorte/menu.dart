@@ -19,7 +19,14 @@ PopupMenuItem<T> itemMenuRecorte<T>({
       children: [
         Icon(icone, size: 22, color: cor),
         const SizedBox(width: 14),
-        Text(texto, style: RecorteTexto.itemMenu.copyWith(color: cor)),
+        Expanded(
+          child: Text(
+            texto,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: RecorteTexto.itemMenu.copyWith(color: cor),
+          ),
+        ),
       ],
     ),
   );
