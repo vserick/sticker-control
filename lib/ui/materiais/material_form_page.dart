@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import '../../data/material_repository.dart';
 import '../../logic/calculo.dart';
 import '../../logic/dinheiro.dart';
+import '../recorte/barra.dart';
+import '../recorte/botoes.dart';
+import '../recorte/campo.dart';
+import '../recorte/icones.dart';
+import '../recorte/tipografia.dart';
+import '../recorte/tokens.dart';
 
 /// Cria um material, ou edita [material] quando informado.
 class MaterialFormPage extends StatefulWidget {
@@ -95,14 +101,10 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
           'alterados.',
         ),
         actions: [
-          TextButton(
+          BotaoCancelarDialogo(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Excluir'),
-          ),
+          BotaoExcluirDialogo(onPressed: () => Navigator.of(context).pop(true)),
         ],
       ),
     );
@@ -114,13 +116,13 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_editando ? 'Editar material' : 'Novo material'),
-        actions: [
+      appBar: BarraRecorte(
+        titulo: _editando ? 'Editar material' : 'Novo material',
+        acoes: [
           if (_editando)
             IconButton(
               tooltip: 'Excluir',
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline, color: RecorteCores.erro),
               onPressed: _excluir,
             ),
         ],
@@ -128,40 +130,58 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(
+            RecorteEspaco.margemTela,
+            8,
+            RecorteEspaco.margemTela,
+            24,
+          ),
           children: [
-            TextFormField(
+            CampoRecorte(
+              rotulo: 'Nome do material',
               controller: _nome,
-              decoration: const InputDecoration(
-                labelText: 'Nome do material',
-                border: OutlineInputBorder(),
+              grande: false,
+              alturaMinima: 72,
+              estiloValor: RecorteTexto.valorTexto.copyWith(
+                fontSize: 18,
+                height: 30 / 18,
+                fontWeight: FontWeight.w600,
+                fontVariations: [FontVariation.weight(600)],
               ),
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.next,
+              capitalizacao: TextCapitalization.sentences,
+              acaoTeclado: TextInputAction.next,
               validator: _validarNome,
               onChanged: (_) => _erroDoRepositorio = null,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
+            const SizedBox(height: RecorteEspaco.entreBlocos),
+            CampoRecorte(
+              rotulo: 'Preço por metro',
               controller: _preco,
-              decoration: const InputDecoration(
-                labelText: 'Preço por metro',
-                prefixText: r'R$ ',
-                suffixText: '/ m',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
+              alturaMinima: 72,
+              prefixo: r'R$',
+              sufixo: '/ m',
+              teclado: const TextInputType.numberWithOptions(decimal: true),
               validator: _validarPreco,
-              onFieldSubmitted: (_) => _salvar(),
+              onSubmitted: (_) => _salvar(),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Largura fixa: 1,10 m.',
-              style: Theme.of(context).textTheme.bodySmall,
+            const SizedBox(height: RecorteEspaco.entreBlocos),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: [
+                  const IconeCota.vertical(),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Largura fixa: 1,10 m.',
+                    style: RecorteTexto.corpoSecundario.copyWith(
+                      fontSize: 13,
+                      height: 18 / 13,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
             FilledButton(
               onPressed: _salvando ? null : _salvar,
               child: const Text('Salvar'),
