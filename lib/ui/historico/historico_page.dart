@@ -134,7 +134,12 @@ class _HistoricoPageState extends State<HistoricoPage> {
                       ),
                     ),
                   ),
-                  if (orcamentos == null)
+                  if (snapshot.hasError)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EstadoErro(),
+                    )
+                  else if (orcamentos == null)
                     const SliverFillRemaining(
                       hasScrollBody: false,
                       child: CarregandoCentralizado(),
