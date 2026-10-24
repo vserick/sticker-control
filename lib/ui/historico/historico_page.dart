@@ -69,7 +69,13 @@ class _HistoricoPageState extends State<HistoricoPage> {
     if (!mounted) return;
     final nome = await showDialog<String>(
       context: context,
-      builder: (_) => _DialogoEmpresa(nomeAtual: atual ?? ''),
+      // O teclado não redimensiona nem desloca o diálogo: tamanho e posição
+      // ficam fixos, no alto da tela, acima do teclado.
+      builder: (context) => MediaQuery.removeViewInsets(
+        context: context,
+        removeBottom: true,
+        child: _DialogoEmpresa(nomeAtual: atual ?? ''),
+      ),
     );
     if (nome != null) {
       await widget.servicos.configuracoes.salvarNomeEmpresa(nome);
@@ -217,6 +223,8 @@ class _DialogoEmpresaState extends State<_DialogoEmpresa> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      alignment: const Alignment(0, -0.6),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       title: const Text('Nome da empresa'),
       content: CampoRecorte(
         rotulo: '',
