@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../data/material_repository.dart';
 import '../../logic/calculo.dart';
 import '../../logic/dinheiro.dart';
+import '../../logic/formatacao.dart';
+import '../../logic/material_validacao.dart';
 import '../recorte/barra.dart';
 import '../recorte/botoes.dart';
 import '../recorte/campo.dart';
@@ -25,8 +27,16 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nome;
   late final TextEditingController _preco;
+  late final TextEditingController _largura;
+  late final TextEditingController _comprimento;
   String? _erroDoRepositorio;
   bool _salvando = false;
+
+  /// Largura travada para não ser alterada sem querer; o cadeado destrava.
+  bool _larguraTravada = true;
+  bool _mostrarErrosMedidas = false;
+
+  static const _teclado = TextInputType.numberWithOptions(decimal: true);
 
   bool get _editando => widget.material != null;
 
@@ -38,12 +48,21 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     _preco = TextEditingController(
       text: m == null ? '' : _centavosParaCampo(m.precoPorMetroCentavos),
     );
+    _largura = TextEditingController(
+      text: formatarMetros(m?.larguraMm ?? larguraPadraoMaterialMm),
+    );
+    final comprimento = m?.comprimentoMm;
+    _comprimento = TextEditingController(
+      text: comprimento == null ? '' : formatarMetros(comprimento),
+    );
   }
 
   @override
   void dispose() {
     _nome.dispose();
     _preco.dispose();
+    _largura.dispose();
+    _comprimento.dispose();
     super.dispose();
   }
 
@@ -62,24 +81,51 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     return null;
   }
 
+  String? _erroLargura() {
+    final mm = lerMetrosEmMm(_largura.text);
+    if (mm == null) return 'Largura inválida, ex.: 1,10.';
+    if (mm <= 0) return 'A largura deve ser maior que zero.';
+    return null;
+  }
+
+  /// O comprimento é opcional, mas se preenchido precisa ser válido.
+  String? _erroComprimento() {
+    if (_comprimento.text.trim().isEmpty) return null;
+    final mm = lerMetrosEmMm(_comprimento.text);
+    if (mm == null) return 'Comprimento inválido, ex.: 50.';
+    if (mm <= 0) return 'O comprimento deve ser maior que zero.';
+    return null;
+  }
+
   Future<void> _salvar() async {
     _erroDoRepositorio = null;
-    if (!_formKey.currentState!.validate()) return;
+    final camposValidos = _formKey.currentState!.validate();
+    final medidasValidas = _erroLargura() == null && _erroComprimento() == null;
+    if (!medidasValidas) setState(() => _mostrarErrosMedidas = true);
+    if (!camposValidos || !medidasValidas) return;
 
     setState(() => _salvando = true);
     final centavos = lerCentavos(_preco.text)!;
+    final larguraMm = lerMetrosEmMm(_largura.text)!;
+    final comprimentoMm = _comprimento.text.trim().isEmpty
+        ? null
+        : lerMetrosEmMm(_comprimento.text);
     try {
       final material = widget.material;
       if (material == null) {
         await widget.repositorio.criar(
           nome: _nome.text,
           precoPorMetroCentavos: centavos,
+          larguraMm: larguraMm,
+          comprimentoMm: comprimentoMm,
         );
       } else {
         await widget.repositorio.atualizar(
           material.id,
           nome: _nome.text,
           precoPorMetroCentavos: centavos,
+          larguraMm: larguraMm,
+          comprimentoMm: comprimentoMm,
         );
       }
       if (mounted) Navigator.of(context).pop();
@@ -155,31 +201,67 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
             ),
             const SizedBox(height: RecorteEspaco.entreBlocos),
             CampoRecorte(
-              rotulo: 'Preço por metro',
+              rotulo: 'Preço por metro - em comprimento',
               controller: _preco,
               alturaMinima: 72,
               prefixo: r'R$',
               sufixo: '/ m',
               teclado: const TextInputType.numberWithOptions(decimal: true),
               validator: _validarPreco,
-              onSubmitted: (_) => _salvar(),
+              acaoTeclado: TextInputAction.next,
             ),
             const SizedBox(height: RecorteEspaco.entreBlocos),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Row(
-                children: [
-                  const IconeCota.vertical(),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Largura fixa: 1,10 m.',
-                    style: RecorteTexto.corpoSecundario.copyWith(
-                      fontSize: 13,
-                      height: 18 / 13,
-                    ),
-                  ),
+            MolduraRecorte(
+              eixo: Axis.horizontal,
+              erros: [
+                if (_mostrarErrosMedidas) ...[
+                  ?_erroLargura(),
+                  ?_erroComprimento(),
                 ],
-              ),
+              ],
+              ajuda: _larguraTravada
+                  ? 'Largura travada. Toque no cadeado para alterar.'
+                  : null,
+              filhos: [
+                CampoInterno(
+                  rotulo: 'Largura',
+                  icone: const IconeCota.vertical(),
+                  controller: _largura,
+                  teclado: _teclado,
+                  sufixo: 'm',
+                  somenteLeitura: _larguraTravada,
+                  erro: _mostrarErrosMedidas && _erroLargura() != null,
+                  onChanged: (_) => setState(() {}),
+                  acao: IconButton(
+                    tooltip: _larguraTravada
+                        ? 'Destravar largura'
+                        : 'Travar largura',
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints.tightFor(
+                      width: 32,
+                      height: 32,
+                    ),
+                    padding: EdgeInsets.zero,
+                    iconSize: 20,
+                    icon: Icon(
+                      _larguraTravada ? Icons.lock_outline : Icons.lock_open,
+                    ),
+                    onPressed: () =>
+                        setState(() => _larguraTravada = !_larguraTravada),
+                  ),
+                ),
+                CampoInterno(
+                  rotulo: 'Comprimento',
+                  icone: const IconeCota.horizontal(),
+                  controller: _comprimento,
+                  teclado: _teclado,
+                  sufixo: 'm',
+                  placeholder: 'opcional',
+                  erro: _mostrarErrosMedidas && _erroComprimento() != null,
+                  onChanged: (_) => setState(() {}),
+                  onSubmitted: (_) => _salvar(),
+                ),
+              ],
             ),
             const SizedBox(height: 22),
             FilledButton(

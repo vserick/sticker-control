@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/material_repository.dart';
 import '../../logic/dinheiro.dart';
+import '../../logic/formatacao.dart';
 import '../recorte/barra.dart';
 import '../recorte/botoes.dart';
 import '../recorte/estados.dart';
@@ -23,6 +24,13 @@ class MateriaisPage extends StatelessWidget {
             MaterialFormPage(repositorio: repositorio, material: material),
       ),
     );
+  }
+
+  String _metadado(MaterialAdesivo m) {
+    final largura = 'Largura ${formatarMetros(m.larguraMm)} m';
+    final comprimento = m.comprimentoMm;
+    if (comprimento == null) return largura;
+    return '$largura · Comprimento ${formatarMetros(comprimento)} m';
   }
 
   @override
@@ -61,7 +69,7 @@ class MateriaisPage extends StatelessWidget {
                     ItemListaBloco(
                       ficha: const FichaModalidade.material(),
                       titulo: m.nome,
-                      metadado: 'Largura 1,10 m',
+                      metadado: _metadado(m),
                       valor: '${formatarBrl(m.precoPorMetroCentavos)} / m',
                       valorComposto: TextSpan(
                         children: [

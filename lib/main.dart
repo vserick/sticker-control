@@ -32,7 +32,7 @@ class StickerControlApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sticker Control',
+      title: 'StickerControl',
       theme: construirTema(),
       debugShowCheckedModeBanner: false,
       home: HistoricoPage(servicos: servicos),

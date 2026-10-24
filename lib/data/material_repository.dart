@@ -4,16 +4,21 @@ import '../logic/calculo.dart';
 import '../logic/material_validacao.dart';
 import 'app_database.dart';
 
-/// Material de adesivo com preço por metro linear. A largura é sempre 1,10 m.
+/// Material de adesivo com preço por metro linear. A [larguraMm] vem como
+/// 1,10 m e o [comprimentoMm] (metragem do material) é opcional.
 class MaterialAdesivo {
   final int id;
   final String nome;
   final int precoPorMetroCentavos;
+  final int larguraMm;
+  final int? comprimentoMm;
 
   const MaterialAdesivo({
     required this.id,
     required this.nome,
     required this.precoPorMetroCentavos,
+    this.larguraMm = larguraPadraoMaterialMm,
+    this.comprimentoMm,
   });
 }
 
@@ -21,10 +26,13 @@ abstract class MaterialRepository {
   /// Todos os materiais em ordem alfabética, atualizado a cada mudança.
   Stream<List<MaterialAdesivo>> observarTodos();
 
-  /// Lança [ErroDeValidacao] se o nome for vazio ou repetido, ou o preço <= 0.
+  /// Lança [ErroDeValidacao] se o nome for vazio ou repetido, ou se o preço ou
+  /// a largura forem <= 0, ou o comprimento informado for <= 0.
   Future<void> criar({
     required String nome,
     required int precoPorMetroCentavos,
+    int larguraMm = larguraPadraoMaterialMm,
+    int? comprimentoMm,
   });
 
   /// Mesmas validações de [criar]; o nome pode continuar o mesmo do material.
@@ -32,6 +40,8 @@ abstract class MaterialRepository {
     int id, {
     required String nome,
     required int precoPorMetroCentavos,
+    int larguraMm = larguraPadraoMaterialMm,
+    int? comprimentoMm,
   });
 
   Future<void> excluir(int id);
@@ -53,10 +63,14 @@ class DriftMaterialRepository implements MaterialRepository {
   Future<void> criar({
     required String nome,
     required int precoPorMetroCentavos,
+    int larguraMm = larguraPadraoMaterialMm,
+    int? comprimentoMm,
   }) async {
     final nomeLimpo = validarMaterial(
       nome: nome,
       precoPorMetroCentavos: precoPorMetroCentavos,
+      larguraMm: larguraMm,
+      comprimentoMm: comprimentoMm,
     );
     await _exigirNomeLivre(nomeLimpo);
     await _db
@@ -65,6 +79,8 @@ class DriftMaterialRepository implements MaterialRepository {
           MateriaisCompanion.insert(
             nome: nomeLimpo,
             precoPorMetroCentavos: precoPorMetroCentavos,
+            larguraMm: Value(larguraMm),
+            comprimentoMm: Value(comprimentoMm),
           ),
         );
   }
@@ -74,16 +90,22 @@ class DriftMaterialRepository implements MaterialRepository {
     int id, {
     required String nome,
     required int precoPorMetroCentavos,
+    int larguraMm = larguraPadraoMaterialMm,
+    int? comprimentoMm,
   }) async {
     final nomeLimpo = validarMaterial(
       nome: nome,
       precoPorMetroCentavos: precoPorMetroCentavos,
+      larguraMm: larguraMm,
+      comprimentoMm: comprimentoMm,
     );
     await _exigirNomeLivre(nomeLimpo, ignorarId: id);
     await (_db.update(_db.materiais)..where((m) => m.id.equals(id))).write(
       MateriaisCompanion(
         nome: Value(nomeLimpo),
         precoPorMetroCentavos: Value(precoPorMetroCentavos),
+        larguraMm: Value(larguraMm),
+        comprimentoMm: Value(comprimentoMm),
       ),
     );
   }
@@ -110,5 +132,7 @@ class DriftMaterialRepository implements MaterialRepository {
     id: linha.id,
     nome: linha.nome,
     precoPorMetroCentavos: linha.precoPorMetroCentavos,
+    larguraMm: linha.larguraMm,
+    comprimentoMm: linha.comprimentoMm,
   );
 }
