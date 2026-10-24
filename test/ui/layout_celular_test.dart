@@ -171,4 +171,27 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('digitar um valor inválido no meio não fecha o teclado', (
+    tester,
+  ) async {
+    await abrirNovo(tester);
+    await tester.tap(find.byType(DropdownButtonFormField<int>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Vinil Branco').last);
+    await tester.pumpAndSettle();
+
+    await tester.showKeyboard(campoDe('Comprimento'));
+    expect(tester.testTextInput.isVisible, isTrue);
+    // "abc" faz aparecer a mensagem de erro sob a moldura (como "1," antes do
+    // número completo); o campo deve manter o foco.
+    await tester.enterText(campoDe('Comprimento'), 'abc');
+    await tester.pump();
+    expect(find.text('Valor inválido, ex.: 1,50.'), findsOneWidget);
+    expect(tester.testTextInput.isVisible, isTrue);
+    await tester.enterText(campoDe('Comprimento'), '1,5');
+    await tester.pump();
+    expect(find.text('Valor inválido, ex.: 1,50.'), findsNothing);
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
 }

@@ -212,6 +212,7 @@ class _CampoInternoState extends State<CampoInterno> {
           alignment: Alignment.centerLeft,
           foregroundDecoration: BoxDecoration(
             border: Border.all(color: corContorno, width: 2),
+            borderRadius: _CantosMoldura.de(context),
           ),
           child: corpo,
         ),
@@ -246,10 +247,25 @@ class MolduraRecorte extends StatelessWidget {
             thickness: 1,
             color: RecorteCores.divisoria,
           );
+    const interno = Radius.circular(RecorteRaio.celula - 1);
     final itens = <Widget>[];
     for (var i = 0; i < filhos.length; i++) {
       if (i > 0) itens.add(divisoria);
-      itens.add(eixo == Axis.vertical ? filhos[i] : Expanded(child: filhos[i]));
+      final primeiro = i == 0;
+      final ultimo = i == filhos.length - 1;
+      // Só os cantos que encostam na moldura são arredondados, para o contorno
+      // de foco/erro acompanhar a borda externa sem deixar cantos sem cor.
+      final cantos = eixo == Axis.vertical
+          ? BorderRadius.vertical(
+              top: primeiro ? interno : Radius.zero,
+              bottom: ultimo ? interno : Radius.zero,
+            )
+          : BorderRadius.horizontal(
+              left: primeiro ? interno : Radius.zero,
+              right: ultimo ? interno : Radius.zero,
+            );
+      final filho = _CantosMoldura(cantos: cantos, child: filhos[i]);
+      itens.add(eixo == Axis.vertical ? filho : Expanded(child: filho));
     }
 
     final moldura = DecoratedBox(
@@ -279,7 +295,8 @@ class MolduraRecorte extends StatelessWidget {
       if (erros.isEmpty && ajuda != null)
         Text(ajuda!, style: RecorteTexto.ajudaCampo),
     ];
-    if (mensagens.isEmpty) return moldura;
+    // A estrutura não muda quando uma mensagem aparece: se mudasse, o campo
+    // perderia o foco (e o teclado fecharia) no meio da digitação.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -289,6 +306,20 @@ class MolduraRecorte extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Cantos arredondados da célula dentro da moldura, lidos pelo contorno.
+class _CantosMoldura extends InheritedWidget {
+  final BorderRadius cantos;
+
+  const _CantosMoldura({required this.cantos, required super.child});
+
+  static BorderRadius de(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_CantosMoldura>()?.cantos ??
+      BorderRadius.circular(RecorteRaio.celula - 1);
+
+  @override
+  bool updateShouldNotify(_CantosMoldura o) => o.cantos != cantos;
 }
 
 /// Célula de campo avulsa: [CampoInterno] dentro da sua própria moldura. Com
