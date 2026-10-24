@@ -4,7 +4,7 @@ import 'icones.dart';
 import 'tipografia.dart';
 
 /// Logotipo do topo do Início (seção 3.15), sem empresa configurada: marca de
-/// registro + wordmark "stickerflow". A versão com logo e nome da empresa é
+/// registro + wordmark "StickerControl". A versão com logo e nome da empresa é
 /// futura (seção 7 do recorte.md).
 class LogotipoTopo extends StatelessWidget {
   const LogotipoTopo({super.key});
@@ -16,7 +16,7 @@ class LogotipoTopo extends StatelessWidget {
       children: [
         const MarcaRegistro(),
         const SizedBox(width: 9),
-        Text('stickerflow', style: RecorteTexto.wordmark),
+        Text('StickerControl', style: RecorteTexto.wordmark),
       ],
     );
   }

@@ -69,7 +69,12 @@ class _HistoricoPageState extends State<HistoricoPage> {
     if (!mounted) return;
     final nome = await showDialog<String>(
       context: context,
-      builder: (_) => _DialogoEmpresa(nomeAtual: atual ?? ''),
+      // Sem os insets do teclado: o diálogo não encolhe quando ele abre.
+      builder: (ctx) => MediaQuery.removeViewInsets(
+        context: ctx,
+        removeBottom: true,
+        child: _DialogoEmpresa(nomeAtual: atual ?? ''),
+      ),
     );
     if (nome != null) {
       await widget.servicos.configuracoes.salvarNomeEmpresa(nome);

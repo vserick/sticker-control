@@ -1,6 +1,7 @@
 import 'dinheiro.dart';
 
-/// Largura máxima, em mm, da produção própria (1,10 m).
+/// Largura máxima, em mm, da produção própria (1,10 m). Vale quando o material
+/// não informa a sua própria largura.
 const larguraMaximaProprioMm = 1100;
 
 /// Dados inválidos para o cálculo (ex.: comprimento zero).
@@ -20,7 +21,8 @@ class ResultadoCalculo {
   /// Preço final ao cliente, arredondado half-up uma única vez.
   final int finalCentavos;
 
-  /// Largura acima de 1,10 m na produção própria: só aviso, não bloqueia.
+  /// Largura acima da largura do material (1,10 m por padrão) na produção
+  /// própria: só aviso, não bloqueia.
   final bool avisoLargura;
 
   const ResultadoCalculo({
@@ -41,6 +43,7 @@ ResultadoCalculo calcularProprio({
   required int comprimentoMm,
   required int larguraMm,
   required int acrescimoBp,
+  int larguraMaximaMm = larguraMaximaProprioMm,
 }) {
   _exigirPositivo(
     precoMetroCentavos,
@@ -57,7 +60,7 @@ ResultadoCalculo calcularProprio({
       custoBase * (10000 + acrescimoBp),
       1000 * 10000,
     ),
-    avisoLargura: larguraMm > larguraMaximaProprioMm,
+    avisoLargura: larguraMm > larguraMaximaMm,
   );
 }
 

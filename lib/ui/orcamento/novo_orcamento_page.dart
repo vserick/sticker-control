@@ -196,6 +196,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
         comprimentoMm: comprimento,
         larguraMm: largura,
         acrescimoBp: acrescimo,
+        larguraMaximaMm: material.larguraMm,
       );
     } on ErroDeValidacao {
       return null;
@@ -231,9 +232,15 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
 
   static const _teclado = TextInputType.numberWithOptions(decimal: true);
 
-  static const _avisoLargura =
-      'Largura acima de 1,10 m: a produção própria não comporta. '
-      'Considere terceirizar.';
+  /// O limite é a largura do material escolhido (1,10 m se não houver).
+  String _avisoLargura(List<MaterialAdesivo> materiais) {
+    final material = materiais.where((m) => m.id == _materialId).firstOrNull;
+    final limite = formatarMetros(
+      material?.larguraMm ?? larguraMaximaProprioMm,
+    );
+    return 'Largura acima de $limite m: a produção própria não comporta. '
+        'Considere terceirizar.';
+  }
 
   /// Mensagens de erro de uma moldura, sem as vazias.
   List<String> _erros(List<String?> erros) => [for (final e in erros) ?e];
@@ -384,7 +391,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
     );
   }
 
-  Widget _blocoResultado(ResultadoCalculo? r) {
+  Widget _blocoResultado(ResultadoCalculo? r, List<MaterialAdesivo> materiais) {
     return ResultadoRecorte(
       resumo: r == null
           ? null
@@ -394,7 +401,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
               acrescimo: formatarBrl(r.finalCentavos - r.custoCentavos),
               precoFinal: formatarBrl(r.finalCentavos),
             ),
-      aviso: r != null && r.avisoLargura ? _avisoLargura : null,
+      aviso: r != null && r.avisoLargura ? _avisoLargura(materiais) : null,
     );
   }
 
@@ -455,7 +462,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
                 ),
               ],
             ),
-            _blocoResultado(_resultado(materiais)),
+            _blocoResultado(_resultado(materiais), materiais),
           ];
           return ListView(
             padding: const EdgeInsets.fromLTRB(

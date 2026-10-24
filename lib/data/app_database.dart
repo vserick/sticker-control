@@ -3,12 +3,15 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'app_database.g.dart';
 
-/// Materiais de adesivo. A largura (1,10 m) é fixa e não fica no banco.
+/// Materiais de adesivo. `larguraMm` vem com 1,10 m (padrão) e `comprimentoMm`
+/// (metragem do material) é opcional.
 @DataClassName('MaterialRow')
 class Materiais extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get nome => text().unique()();
   IntColumn get precoPorMetroCentavos => integer()();
+  IntColumn get larguraMm => integer().withDefault(const Constant(1100))();
+  IntColumn get comprimentoMm => integer().nullable()();
 }
 
 /// Orçamentos salvos. `materialNome` e `precoPorMetroCentavos` são cópias do
@@ -48,7 +51,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'sticker_control'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -56,6 +59,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.createTable(orcamentos);
         await m.createTable(configuracoes);
+      }
+      if (from < 3) {
+        await m.addColumn(materiais, materiais.larguraMm);
+        await m.addColumn(materiais, materiais.comprimentoMm);
       }
     },
   );

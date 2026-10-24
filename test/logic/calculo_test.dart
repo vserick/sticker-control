@@ -36,6 +36,18 @@ void main() {
       expect(acima.finalCentavos, 5000);
     });
 
+    test('o limite do aviso pode ser a largura do material', () {
+      resultado(int larg) => calcularProprio(
+        precoMetroCentavos: 5000,
+        comprimentoMm: 1000,
+        larguraMm: larg,
+        acrescimoBp: 0,
+        larguraMaximaMm: 1600,
+      );
+      expect(resultado(1600).avisoLargura, isFalse);
+      expect(resultado(1601).avisoLargura, isTrue);
+    });
+
     test('0% de acréscimo: final = custo', () {
       final r = _proprio(preco: 3333, comp: 1500);
       expect(r.finalCentavos, r.custoCentavos);

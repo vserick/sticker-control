@@ -20,7 +20,7 @@ Future<MaterialRepositoryFake> _abrir(
 
 Future<void> _preencher(WidgetTester tester, String nome, String preco) async {
   await tester.enterText(campoDe('Nome do material'), nome);
-  await tester.enterText(campoDe('Preço por metro'), preco);
+  await tester.enterText(campoDe('Preço por metro - em comprimento'), preco);
 }
 
 void main() {
@@ -50,7 +50,11 @@ void main() {
 
     await tester.tap(find.text('Novo material'));
     await tester.pumpAndSettle();
-    expect(find.text('Largura fixa: 1,10 m.'), findsOneWidget);
+    expect(
+      tester.widget<TextField>(campoDe('Largura')).controller!.text,
+      '1,10',
+    );
+    expect(tester.widget<TextField>(campoDe('Largura')).readOnly, isTrue);
 
     await _preencher(tester, 'Vinil branco', '50,5');
     await tester.tap(find.text('Salvar'));
@@ -59,6 +63,42 @@ void main() {
     expect(repo.itens.single.nome, 'Vinil branco');
     expect(repo.itens.single.precoPorMetroCentavos, 5050);
     expect(find.text('R\$ 50,50 / m'), findsOneWidget);
+  });
+
+  testWidgets('largura vem travada em 1,10 m e o cadeado destrava', (
+    tester,
+  ) async {
+    final repo = await _abrir(tester);
+    await tester.tap(find.text('Novo material'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Destravar largura'));
+    await tester.pump();
+    expect(tester.widget<TextField>(campoDe('Largura')).readOnly, isFalse);
+
+    await _preencher(tester, 'Vinil largo', '80,00');
+    await tester.enterText(campoDe('Largura'), '1,60');
+    await tester.enterText(campoDe('Comprimento'), '50');
+    await tester.tap(find.text('Salvar'));
+    await tester.pumpAndSettle();
+
+    expect(repo.itens.single.larguraMm, 1600);
+    expect(repo.itens.single.comprimentoMm, 50000);
+    expect(find.text('Largura 1,60 m · Comprimento 50,00 m'), findsOneWidget);
+  });
+
+  testWidgets('material novo salva com largura 1,10 m e sem comprimento', (
+    tester,
+  ) async {
+    final repo = await _abrir(tester);
+    await tester.tap(find.text('Novo material'));
+    await tester.pumpAndSettle();
+    await _preencher(tester, 'Vinil', '50');
+    await tester.tap(find.text('Salvar'));
+    await tester.pumpAndSettle();
+
+    expect(repo.itens.single.larguraMm, 1100);
+    expect(repo.itens.single.comprimentoMm, isNull);
   });
 
   testWidgets('valida nome obrigatório e preço > 0', (tester) async {
@@ -97,7 +137,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Editar material'), findsOneWidget);
 
-    await tester.enterText(campoDe('Preço por metro'), '60,00');
+    await tester.enterText(
+      campoDe('Preço por metro - em comprimento'),
+      '60,00',
+    );
     await tester.tap(find.text('Salvar'));
     await tester.pumpAndSettle();
 
