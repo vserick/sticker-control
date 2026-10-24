@@ -1,4 +1,4 @@
-# StickerControl · Identidade visual "Recorte"
+# StickerFlow · Identidade visual "Recorte"
 
 Especificação de interface aprovada em 19/10/2026. É a fonte de verdade para o visual do app.
 Este documento muda **só a aparência** — com três exceções de comportamento, listadas na seção 5.
@@ -82,7 +82,7 @@ Números de dinheiro e medidas usam algarismos tabulares (`FontFeature.tabularFi
 |---|---|---|---|
 | Título do Início ("Orçamentos") | Schibsted 800 | 36 / 40 | −0,035 em |
 | Título da barra superior | Schibsted 800 | 21 / 28 | −0,025 em |
-| Wordmark "StickerControl" | Schibsted 800 | 20 | −0,03 em |
+| Wordmark "stickerflow" | Schibsted 800 | 20 | −0,03 em |
 | Preço final (adesivo) | Schibsted 800 | 38 / 46 | −0,035 em |
 | Valor digitado em célula | Schibsted 600 | 26 / 34 | — |
 | Preço na lista / valores do resultado | Schibsted 700 / 600 | 17 / 14 | — |
@@ -206,7 +206,7 @@ Cartão branco, borda 1 px, raio 14, sombra, largura ≈ 252, ancorado abaixo do
 Só no topo do Início: grade de 16 px em linhas `grade` de 1 px, ~190 px de altura, desaparecendo gradualmente para baixo. Decorativa (excluir da acessibilidade).
 
 ### 3.15 Logotipo no topo do Início
-- **Sem empresa configurada (padrão, hoje):** marca de registro (círculo + cruz em grafite, ponto central `brand`) + wordmark "StickerControl".
+- **Sem empresa configurada (padrão, hoje):** marca de registro (círculo + cruz em grafite, ponto central `brand`) + wordmark "stickerflow".
 - **Com empresa (futuro, seção 7):** logo da empresa (32 px) + nome da empresa (Schibsted 700 18).
 
 ---
@@ -286,7 +286,7 @@ Cálculos, arredondamentos, validações, campos, ordem do fluxo, navegação, t
 | | Situação |
 |---|---|
 | Nome da empresa | **Existe hoje** (diálogo do menu); usado na mensagem e na prévia ("Sua Empresa" quando vazio). |
-| Nome da empresa no topo do Início | Futuro (3.15). Hoje o topo mostra a marca StickerControl. |
+| Nome da empresa no topo do Início | Futuro (3.15). Hoje o topo mostra a marca StickerFlow. |
 | Logotipo | Futuro. Ainda **sem tela de configuração** — decisão adiada. |
 | Cor principal | Futuro. Nesta implementação, `brand` fica fixo em `#C2185B`, mas tudo que usa a marca deve ler de **um só lugar** (ex.: `ThemeExtension`), com as derivadas da 2.2 calculadas a partir dele. |
 
@@ -311,7 +311,7 @@ Exportar cada prancheta do canvas com o nome abaixo. As pranchetas "estados" sã
 | Arquivo | Prancheta no canvas | Conteúdo |
 |---|---|---|
 | `00-identidade-1.png` e `00-identidade-2.png` | Direção 4 · Recorte — identidade | Paleta, tipografia, componentes |
-| `01-inicio-lista.png` | Recorte · Início (padrão StickerControl) | Início com dados |
+| `01-inicio-lista.png` | Recorte · Início (padrão StickerFlow) | Início com dados |
 | `01-inicio-vazio.png` | Início · vazio | Estado vazio |
 | `01-inicio-estados.png` | Início · carregando · erro · menu · avisos… | carregando, erro, menu, "Orçamento salvo.", falha WhatsApp, "Mensagem salva.", empresa Corte Fino |
 | `02-dialogo-nome-empresa.png` | Diálogo · Nome da empresa | Diálogo com teclado |
