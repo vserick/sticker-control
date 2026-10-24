@@ -254,4 +254,29 @@ void main() {
     expect(salvo.larguraMm, isNull);
     expect(salvo.finalCentavos, 4000);
   });
+
+  testWidgets('aviso de largura usa a largura do material escolhido', (
+    tester,
+  ) async {
+    final fake = await _abrir(tester, comMaterial: false);
+    await fake.materiais.criar(
+      nome: 'Vinil branco',
+      precoPorMetroCentavos: 5000,
+      larguraMm: 1500,
+      comprimentoMm: 3000,
+    );
+    await tester.pumpAndSettle();
+    await _escolherMaterial(tester);
+    await _digitar(tester, 'Comprimento', '2');
+    await _digitar(tester, 'Largura', '1,4');
+    expect(find.textContaining('Largura acima de'), findsNothing);
+
+    await _digitar(tester, 'Largura', '1,6');
+    expect(find.textContaining('Largura acima de 1,50 m'), findsOneWidget);
+
+    await _digitar(tester, 'Comprimento', '3,5');
+    expect(find.textContaining('Comprimento acima de 3,00 m'), findsOneWidget);
+    // Só avisa: o preço continua calculado (3,5 m × R$ 50,00).
+    expect(find.text('R\$ 175,00'), findsWidgets);
+  });
 }

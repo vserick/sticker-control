@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/material_repository.dart';
 import '../../logic/dinheiro.dart';
+import '../../logic/formatacao.dart';
 import '../recorte/barra.dart';
 import '../recorte/botoes.dart';
 import '../recorte/estados.dart';
@@ -61,7 +62,7 @@ class MateriaisPage extends StatelessWidget {
                     ItemListaBloco(
                       ficha: const FichaModalidade.material(),
                       titulo: m.nome,
-                      metadado: 'Largura 1,10 m',
+                      metadado: 'Largura ${formatarMetros(m.larguraMm)} m',
                       valor: '${formatarBrl(m.precoPorMetroCentavos)} / m',
                       valorComposto: TextSpan(
                         children: [

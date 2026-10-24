@@ -72,7 +72,7 @@ void main() {
 
     await tester.tap(find.text('Novo material'));
     await tester.pumpAndSettle();
-    expect(find.text('Largura fixa: 1,10 m.'), findsOneWidget);
+    expect(find.text('Largura do material'), findsOneWidget);
     expect(find.byTooltip('Excluir'), findsNothing);
     await tester.tap(find.text('Salvar'));
     await tester.pumpAndSettle();

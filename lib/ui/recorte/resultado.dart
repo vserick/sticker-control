@@ -14,10 +14,14 @@ import 'tokens.dart';
 class ResultadoRecorte extends StatelessWidget {
   final ResumoPreco? resumo;
 
-  /// Texto do aviso amarelo entre as parcelas e o adesivo (ex.: largura).
-  final String? aviso;
+  /// Textos dos avisos amarelos entre as parcelas e o adesivo (ex.: largura).
+  final List<String> avisos;
 
-  const ResultadoRecorte({super.key, required this.resumo, this.aviso});
+  const ResultadoRecorte({
+    super.key,
+    required this.resumo,
+    this.avisos = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +36,9 @@ class ResultadoRecorte extends StatelessWidget {
             (rotulo: r.rotuloAcrescimo, valor: r.acrescimo),
           ],
         ),
-        if (aviso != null) ...[
+        for (final aviso in avisos) ...[
           const SizedBox(height: 12),
-          AvisoAmarelo(texto: aviso!),
+          AvisoAmarelo(texto: aviso),
         ],
         const SizedBox(height: 12),
         AdesivoPreco(valor: r.precoFinal),
