@@ -1,4 +1,4 @@
-# StickerControl
+# Sticker Control
 
 App Flutter (Android) para uma pequena empresa de adesivos calcular orçamentos
 no celular: material, comprimento, largura e percentual de acréscimo. Os dados
