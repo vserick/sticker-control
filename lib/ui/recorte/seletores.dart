@@ -137,70 +137,75 @@ class SeletorMaterial extends StatelessWidget {
         border: Border.all(color: RecorteCores.borda),
         borderRadius: BorderRadius.circular(RecorteRaio.celula),
       ),
-      child: DropdownButtonFormField<int>(
-        initialValue: atual?.id,
-        isExpanded: true,
-        isDense: false,
-        decoration: const InputDecoration(
-          isCollapsed: true,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: EdgeInsets.zero,
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 0, 12, 0),
-        borderRadius: BorderRadius.circular(RecorteRaio.menu),
-        dropdownColor: RecorteCores.superficie,
-        elevation: 8,
-        itemHeight: 52,
-        icon: const Icon(
-          Icons.keyboard_arrow_down,
-          color: RecorteCores.grafite,
-        ),
-        iconSize: 22,
-        style: RecorteTexto.itemMenu,
-        hint: Text(
-          'Material',
-          style: RecorteTexto.valorTexto.copyWith(color: RecorteCores.rotulo),
-        ),
-        selectedItemBuilder: (_) => [
-          for (final m in materiais)
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Material', style: RecorteTexto.rotuloCelula),
-                      Text(
-                        m.nome,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: RecorteTexto.valorTexto.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontVariations: [FontVariation.weight(600)],
+      // alignedDropdown: o menu abre com a mesma largura do campo, em vez de
+      // sobrar 16/24 px para os lados e encostar nas bordas da tela.
+      child: ButtonTheme(
+        alignedDropdown: true,
+        child: DropdownButtonFormField<int>(
+          initialValue: atual?.id,
+          isExpanded: true,
+          isDense: false,
+          decoration: const InputDecoration(
+            isCollapsed: true,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            contentPadding: EdgeInsets.zero,
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 0, 12, 0),
+          borderRadius: BorderRadius.circular(RecorteRaio.menu),
+          dropdownColor: RecorteCores.superficie,
+          elevation: 8,
+          itemHeight: 52,
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: RecorteCores.grafite,
+          ),
+          iconSize: 22,
+          style: RecorteTexto.itemMenu,
+          hint: Text(
+            'Material',
+            style: RecorteTexto.valorTexto.copyWith(color: RecorteCores.rotulo),
+          ),
+          selectedItemBuilder: (_) => [
+            for (final m in materiais)
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Material', style: RecorteTexto.rotuloCelula),
+                        Text(
+                          m.nome,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: RecorteTexto.valorTexto.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontVariations: [FontVariation.weight(600)],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Text(m.preco, style: RecorteTexto.rotuloPrecoMaterial),
-              ],
-            ),
-        ],
-        items: [
-          for (final m in materiais)
-            DropdownMenuItem(
-              value: m.id,
-              child: Text(
-                '${m.nome} · ${m.preco}',
-                overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 12),
+                  Text(m.preco, style: RecorteTexto.rotuloPrecoMaterial),
+                ],
               ),
-            ),
-        ],
-        onChanged: onChanged,
+          ],
+          items: [
+            for (final m in materiais)
+              DropdownMenuItem(
+                value: m.id,
+                child: Text(
+                  '${m.nome} · ${m.preco}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+          onChanged: onChanged,
+        ),
       ),
     );
   }

@@ -49,6 +49,27 @@ Future<void> _escolherMaterial(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('digitar uma medida parcial (1,) não tira o foco do campo', (
+    tester,
+  ) async {
+    await _abrir(tester);
+    await tester.tap(campoDe('Comprimento'));
+    await tester.pump();
+    final foco = tester.widget<TextField>(campoDe('Comprimento')).focusNode!;
+    expect(foco.hasFocus, isTrue);
+
+    for (final texto in ['1', '1,', '1,5']) {
+      tester.testTextInput.updateEditingValue(
+        TextEditingValue(
+          text: texto,
+          selection: TextSelection.collapsed(offset: texto.length),
+        ),
+      );
+      await tester.pump();
+      expect(foco.hasFocus, isTrue, reason: 'após digitar "$texto"');
+    }
+  });
+
   testWidgets('sem material cadastrado orienta a cadastrar', (tester) async {
     await _abrir(tester, comMaterial: false);
     expect(find.text('Nenhum material cadastrado'), findsOneWidget);
@@ -80,6 +101,27 @@ void main() {
 
     expect(find.textContaining('Largura acima de 1,10 m'), findsOneWidget);
     expect(find.text('R\$ 100,00'), findsWidgets); // ainda calcula
+  });
+
+  testWidgets('o aviso usa a largura do material como limite', (tester) async {
+    final fake = await _abrir(tester);
+    await fake.materiais.criar(
+      nome: 'Vinil largo',
+      precoPorMetroCentavos: 8000,
+      larguraMm: 1600,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<int>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Vinil largo').last);
+    await tester.pumpAndSettle();
+    await _digitar(tester, 'Comprimento', '2');
+
+    await _digitar(tester, 'Largura', '1,5');
+    expect(find.textContaining('Largura acima de'), findsNothing);
+
+    await _digitar(tester, 'Largura', '1,7');
+    expect(find.textContaining('Largura acima de 1,60 m'), findsOneWidget);
   });
 
   testWidgets('largura exata de 1,10 m não avisa', (tester) async {

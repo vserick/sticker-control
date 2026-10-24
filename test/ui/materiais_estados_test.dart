@@ -6,6 +6,7 @@ import 'package:sticker_control/data/material_repository.dart';
 import 'package:sticker_control/ui/materiais/materiais_page.dart';
 import 'package:sticker_control/ui/recorte/tema.dart';
 
+import '../support/finders.dart';
 import '../support/fontes.dart';
 import '../support/material_repository_fake.dart';
 
@@ -72,7 +73,11 @@ void main() {
 
     await tester.tap(find.text('Novo material'));
     await tester.pumpAndSettle();
-    expect(find.text('Largura fixa: 1,10 m.'), findsOneWidget);
+    expect(
+      tester.widget<TextField>(campoDe('Largura')).controller!.text,
+      '1,10',
+    );
+    expect(tester.widget<TextField>(campoDe('Largura')).readOnly, isTrue);
     expect(find.byTooltip('Excluir'), findsNothing);
     await tester.tap(find.text('Salvar'));
     await tester.pumpAndSettle();

@@ -40,6 +40,12 @@ class CampoInterno extends StatefulWidget {
   final bool autofocus;
   final List<TextInputFormatter>? formatadores;
 
+  /// Campo travado: mostra o valor mas não aceita digitação nem foco.
+  final bool somenteLeitura;
+
+  /// Widget no fim da linha do valor (ex.: cadeado que destrava o campo).
+  final Widget? acao;
+
   const CampoInterno({
     super.key,
     required this.rotulo,
@@ -63,6 +69,8 @@ class CampoInterno extends StatefulWidget {
     this.onSubmitted,
     this.autofocus = false,
     this.formatadores,
+    this.somenteLeitura = false,
+    this.acao,
   });
 
   @override
@@ -122,6 +130,8 @@ class _CampoInternoState extends State<CampoInterno> {
       minLines: w.minLinhas,
       maxLines: w.maxLinhas ?? 1,
       inputFormatters: w.formatadores,
+      readOnly: w.somenteLeitura,
+      enableInteractiveSelection: !w.somenteLeitura,
       onChanged: w.onChanged,
       onSubmitted: w.onSubmitted,
       style: estiloValor,
@@ -186,6 +196,7 @@ class _CampoInternoState extends State<CampoInterno> {
                 const SizedBox(width: 5),
                 Text(w.sufixo!, style: RecorteTexto.unidade),
               ],
+              if (w.acao != null) ...[const SizedBox(width: 4), w.acao!],
             ],
           ),
         ],
@@ -212,6 +223,7 @@ class _CampoInternoState extends State<CampoInterno> {
           alignment: Alignment.centerLeft,
           foregroundDecoration: BoxDecoration(
             border: Border.all(color: corContorno, width: 2),
+            borderRadius: _CantosCampo.de(context),
           ),
           child: corpo,
         ),
@@ -249,7 +261,11 @@ class MolduraRecorte extends StatelessWidget {
     final itens = <Widget>[];
     for (var i = 0; i < filhos.length; i++) {
       if (i > 0) itens.add(divisoria);
-      itens.add(eixo == Axis.vertical ? filhos[i] : Expanded(child: filhos[i]));
+      final filho = _CantosCampo(
+        cantos: _cantosDoItem(i, filhos.length, eixo),
+        child: filhos[i],
+      );
+      itens.add(eixo == Axis.vertical ? filho : Expanded(child: filho));
     }
 
     final moldura = DecoratedBox(
@@ -279,8 +295,10 @@ class MolduraRecorte extends StatelessWidget {
       if (erros.isEmpty && ajuda != null)
         Text(ajuda!, style: RecorteTexto.ajudaCampo),
     ];
-    if (mensagens.isEmpty) return moldura;
+    // Estrutura sempre igual, com ou sem mensagens: se a moldura trocasse de pai
+    // ao aparecer um erro, o campo perderia o foco e o teclado fecharia.
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         moldura,
@@ -289,6 +307,39 @@ class MolduraRecorte extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Cantos arredondados do contorno de foco/erro, acompanhando os cantos da
+/// moldura que ficam na célula (o recorte da moldura os cortaria se fossem
+/// retos).
+class _CantosCampo extends InheritedWidget {
+  final BorderRadius cantos;
+
+  const _CantosCampo({required this.cantos, required super.child});
+
+  static BorderRadius de(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_CantosCampo>()?.cantos ??
+      BorderRadius.zero;
+
+  @override
+  bool updateShouldNotify(_CantosCampo antigo) => cantos != antigo.cantos;
+}
+
+/// Cantos da moldura que pertencem à célula [i] de [total].
+BorderRadius _cantosDoItem(int i, int total, Axis eixo) {
+  const r = Radius.circular(RecorteRaio.celula - 1);
+  final primeiro = i == 0;
+  final ultimo = i == total - 1;
+  if (eixo == Axis.vertical) {
+    return BorderRadius.vertical(
+      top: primeiro ? r : Radius.zero,
+      bottom: ultimo ? r : Radius.zero,
+    );
+  }
+  return BorderRadius.horizontal(
+    left: primeiro ? r : Radius.zero,
+    right: ultimo ? r : Radius.zero,
+  );
 }
 
 /// Célula de campo avulsa: [CampoInterno] dentro da sua própria moldura. Com
@@ -319,6 +370,8 @@ class CampoRecorte extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final bool autofocus;
   final FormFieldValidator<String>? validator;
+  final bool somenteLeitura;
+  final Widget? acao;
 
   const CampoRecorte({
     super.key,
@@ -344,6 +397,8 @@ class CampoRecorte extends StatelessWidget {
     this.onSubmitted,
     this.autofocus = false,
     this.validator,
+    this.somenteLeitura = false,
+    this.acao,
   });
 
   Widget _construir(String? mensagem, ValueChanged<String>? aoMudar) {
@@ -372,6 +427,8 @@ class CampoRecorte extends StatelessWidget {
           onChanged: aoMudar,
           onSubmitted: onSubmitted,
           autofocus: autofocus,
+          somenteLeitura: somenteLeitura,
+          acao: acao,
         ),
       ],
     );
