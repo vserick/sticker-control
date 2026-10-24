@@ -37,14 +37,10 @@ class MaterialRepositoryFake implements MaterialRepository {
   Future<void> criar({
     required String nome,
     required int precoPorMetroCentavos,
-    int larguraMm = larguraMaximaProprioMm,
-    int? comprimentoMm,
   }) async {
     final limpo = validarMaterial(
       nome: nome,
       precoPorMetroCentavos: precoPorMetroCentavos,
-      larguraMm: larguraMm,
-      comprimentoMm: comprimentoMm,
     );
     _exigirNomeLivre(limpo);
     _itens.add(
@@ -52,8 +48,6 @@ class MaterialRepositoryFake implements MaterialRepository {
         id: _proximoId++,
         nome: limpo,
         precoPorMetroCentavos: precoPorMetroCentavos,
-        larguraMm: larguraMm,
-        comprimentoMm: comprimentoMm,
       ),
     );
     _emitir();
@@ -64,14 +58,10 @@ class MaterialRepositoryFake implements MaterialRepository {
     int id, {
     required String nome,
     required int precoPorMetroCentavos,
-    int larguraMm = larguraMaximaProprioMm,
-    int? comprimentoMm,
   }) async {
     final limpo = validarMaterial(
       nome: nome,
       precoPorMetroCentavos: precoPorMetroCentavos,
-      larguraMm: larguraMm,
-      comprimentoMm: comprimentoMm,
     );
     _exigirNomeLivre(limpo, ignorarId: id);
     final i = _itens.indexWhere((m) => m.id == id);
@@ -79,8 +69,6 @@ class MaterialRepositoryFake implements MaterialRepository {
       id: id,
       nome: limpo,
       precoPorMetroCentavos: precoPorMetroCentavos,
-      larguraMm: larguraMm,
-      comprimentoMm: comprimentoMm,
     );
     _emitir();
   }

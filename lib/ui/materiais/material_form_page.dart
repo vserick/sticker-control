@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../data/material_repository.dart';
 import '../../logic/calculo.dart';
 import '../../logic/dinheiro.dart';
-import '../../logic/formatacao.dart';
 import '../recorte/barra.dart';
 import '../recorte/botoes.dart';
 import '../recorte/campo.dart';
@@ -26,11 +25,6 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nome;
   late final TextEditingController _preco;
-  late final TextEditingController _largura;
-  late final TextEditingController _comprimento;
-
-  /// A largura começa travada, para não ser alterada sem querer.
-  bool _larguraTravada = true;
   String? _erroDoRepositorio;
   bool _salvando = false;
 
@@ -44,21 +38,12 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     _preco = TextEditingController(
       text: m == null ? '' : _centavosParaCampo(m.precoPorMetroCentavos),
     );
-    _largura = TextEditingController(
-      text: formatarMetros(m?.larguraMm ?? larguraMaximaProprioMm),
-    );
-    final rolo = m?.comprimentoMm;
-    _comprimento = TextEditingController(
-      text: rolo == null ? '' : formatarMetros(rolo),
-    );
   }
 
   @override
   void dispose() {
     _nome.dispose();
     _preco.dispose();
-    _largura.dispose();
-    _comprimento.dispose();
     super.dispose();
   }
 
@@ -77,48 +62,24 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     return null;
   }
 
-  String? _validarLargura(String? valor) {
-    final mm = lerMetrosEmMm(valor ?? '');
-    if (mm == null) return 'Informe uma largura válida, ex.: 1,10.';
-    if (mm <= 0) return 'A largura deve ser maior que zero.';
-    return null;
-  }
-
-  /// Opcional: em branco vale "sem metragem informada".
-  String? _validarComprimento(String? valor) {
-    if (valor == null || valor.trim().isEmpty) return null;
-    final mm = lerMetrosEmMm(valor);
-    if (mm == null) return 'Informe um comprimento válido, ex.: 50,00.';
-    if (mm <= 0) return 'O comprimento deve ser maior que zero.';
-    return null;
-  }
-
   Future<void> _salvar() async {
     _erroDoRepositorio = null;
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _salvando = true);
     final centavos = lerCentavos(_preco.text)!;
-    final larguraMm = lerMetrosEmMm(_largura.text)!;
-    final comprimentoMm = _comprimento.text.trim().isEmpty
-        ? null
-        : lerMetrosEmMm(_comprimento.text);
     try {
       final material = widget.material;
       if (material == null) {
         await widget.repositorio.criar(
           nome: _nome.text,
           precoPorMetroCentavos: centavos,
-          larguraMm: larguraMm,
-          comprimentoMm: comprimentoMm,
         );
       } else {
         await widget.repositorio.atualizar(
           material.id,
           nome: _nome.text,
           precoPorMetroCentavos: centavos,
-          larguraMm: larguraMm,
-          comprimentoMm: comprimentoMm,
         );
       }
       if (mounted) Navigator.of(context).pop();
@@ -194,7 +155,7 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
             ),
             const SizedBox(height: RecorteEspaco.entreBlocos),
             CampoRecorte(
-              rotulo: 'Preço por metro - em comprimento',
+              rotulo: 'Preço por metro',
               controller: _preco,
               alturaMinima: 72,
               prefixo: r'R$',
@@ -204,40 +165,21 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
               onSubmitted: (_) => _salvar(),
             ),
             const SizedBox(height: RecorteEspaco.entreBlocos),
-            CampoRecorte(
-              rotulo: 'Largura do material',
-              icone: const IconeCota.vertical(),
-              controller: _largura,
-              alturaMinima: 72,
-              sufixo: 'm',
-              teclado: const TextInputType.numberWithOptions(decimal: true),
-              somenteLeitura: _larguraTravada,
-              validator: _validarLargura,
-              ajuda: _larguraTravada
-                  ? 'Travada. Toque no cadeado para alterar.'
-                  : 'Largura do rolo; define o aviso de largura nos orçamentos.',
-              trailing: IconButton(
-                tooltip: _larguraTravada
-                    ? 'Destravar largura'
-                    : 'Travar largura',
-                icon: Icon(
-                  _larguraTravada ? Icons.lock_outline : Icons.lock_open,
-                ),
-                onPressed: () =>
-                    setState(() => _larguraTravada = !_larguraTravada),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: [
+                  const IconeCota.vertical(),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Largura fixa: 1,10 m.',
+                    style: RecorteTexto.corpoSecundario.copyWith(
+                      fontSize: 13,
+                      height: 18 / 13,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: RecorteEspaco.entreBlocos),
-            CampoRecorte(
-              rotulo: 'Comprimento do material',
-              icone: const IconeCota.horizontal(),
-              controller: _comprimento,
-              alturaMinima: 72,
-              sufixo: 'm',
-              placeholder: 'opcional',
-              teclado: const TextInputType.numberWithOptions(decimal: true),
-              validator: _validarComprimento,
-              ajuda: 'Metragem do rolo; avisa se um orçamento passar dela.',
             ),
             const SizedBox(height: 22),
             FilledButton(

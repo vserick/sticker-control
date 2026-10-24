@@ -226,7 +226,7 @@ void main() {
             acrescimo: r'R$ 50,00',
             precoFinal: r'R$ 150,00',
           ),
-          avisos: ['Largura acima de 1,10 m: a produção própria não comporta.'],
+          aviso: 'Largura acima de 1,10 m: a produção própria não comporta.',
         ),
       );
       expect(find.text('Custo'), findsOneWidget);

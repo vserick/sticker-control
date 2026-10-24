@@ -40,12 +40,6 @@ class CampoInterno extends StatefulWidget {
   final bool autofocus;
   final List<TextInputFormatter>? formatadores;
 
-  /// Campo travado: mostra o valor, mas não aceita digitação.
-  final bool somenteLeitura;
-
-  /// Ação à direita da célula (ex.: o cadeado da largura).
-  final Widget? trailing;
-
   const CampoInterno({
     super.key,
     required this.rotulo,
@@ -69,8 +63,6 @@ class CampoInterno extends StatefulWidget {
     this.onSubmitted,
     this.autofocus = false,
     this.formatadores,
-    this.somenteLeitura = false,
-    this.trailing,
   });
 
   @override
@@ -124,7 +116,6 @@ class _CampoInternoState extends State<CampoInterno> {
       controller: w.controller,
       focusNode: _foco,
       autofocus: w.autofocus,
-      readOnly: w.somenteLeitura,
       keyboardType: w.teclado,
       textCapitalization: w.capitalizacao,
       textInputAction: w.acaoTeclado,
@@ -223,14 +214,7 @@ class _CampoInternoState extends State<CampoInterno> {
             border: Border.all(color: corContorno, width: 2),
             borderRadius: _CantosMoldura.de(context),
           ),
-          child: w.trailing == null
-              ? corpo
-              : Row(
-                  children: [
-                    Expanded(child: corpo),
-                    w.trailing!,
-                  ],
-                ),
+          child: corpo,
         ),
       ),
     );
@@ -366,8 +350,6 @@ class CampoRecorte extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final bool autofocus;
   final FormFieldValidator<String>? validator;
-  final bool somenteLeitura;
-  final Widget? trailing;
 
   const CampoRecorte({
     super.key,
@@ -393,8 +375,6 @@ class CampoRecorte extends StatelessWidget {
     this.onSubmitted,
     this.autofocus = false,
     this.validator,
-    this.somenteLeitura = false,
-    this.trailing,
   });
 
   Widget _construir(String? mensagem, ValueChanged<String>? aoMudar) {
@@ -423,8 +403,6 @@ class CampoRecorte extends StatelessWidget {
           onChanged: aoMudar,
           onSubmitted: onSubmitted,
           autofocus: autofocus,
-          somenteLeitura: somenteLeitura,
-          trailing: trailing,
         ),
       ],
     );
