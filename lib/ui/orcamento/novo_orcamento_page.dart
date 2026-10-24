@@ -196,8 +196,6 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
         comprimentoMm: comprimento,
         larguraMm: largura,
         acrescimoBp: acrescimo,
-        larguraMaximaMm: material.larguraMm,
-        comprimentoMaximoMm: material.comprimentoMm,
       );
     } on ErroDeValidacao {
       return null;
@@ -233,19 +231,9 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
 
   static const _teclado = TextInputType.numberWithOptions(decimal: true);
 
-  /// Avisos amarelos do resultado: só informam, não bloqueiam.
-  List<String> _avisos(ResultadoCalculo? r, List<MaterialAdesivo> materiais) {
-    final material = materiais.where((m) => m.id == _materialId).firstOrNull;
-    if (r == null || material == null) return const [];
-    return [
-      if (r.avisoLargura)
-        'Largura acima de ${formatarMetros(material.larguraMm)} m: a produção '
-            'própria não comporta. Considere terceirizar.',
-      if (r.avisoComprimento)
-        'Comprimento acima de ${formatarMetros(material.comprimentoMm!)} m: '
-            'mais do que a metragem cadastrada do material.',
-    ];
-  }
+  static const _avisoLargura =
+      'Largura acima de 1,10 m: a produção própria não comporta. '
+      'Considere terceirizar.';
 
   /// Mensagens de erro de uma moldura, sem as vazias.
   List<String> _erros(List<String?> erros) => [for (final e in erros) ?e];
@@ -396,7 +384,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
     );
   }
 
-  Widget _blocoResultado(ResultadoCalculo? r, List<MaterialAdesivo> materiais) {
+  Widget _blocoResultado(ResultadoCalculo? r) {
     return ResultadoRecorte(
       resumo: r == null
           ? null
@@ -406,7 +394,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
               acrescimo: formatarBrl(r.finalCentavos - r.custoCentavos),
               precoFinal: formatarBrl(r.finalCentavos),
             ),
-      avisos: _avisos(r, materiais),
+      aviso: r != null && r.avisoLargura ? _avisoLargura : null,
     );
   }
 
@@ -467,7 +455,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
                 ),
               ],
             ),
-            _blocoResultado(_resultado(materiais), materiais),
+            _blocoResultado(_resultado(materiais)),
           ];
           return ListView(
             padding: const EdgeInsets.fromLTRB(

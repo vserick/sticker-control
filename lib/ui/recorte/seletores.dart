@@ -137,8 +137,6 @@ class SeletorMaterial extends StatelessWidget {
         border: Border.all(color: RecorteCores.borda),
         borderRadius: BorderRadius.circular(RecorteRaio.celula),
       ),
-      // A folga de 12 px nas laterais afasta a lista aberta das bordas da tela.
-      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: DropdownButtonFormField<int>(
         initialValue: atual?.id,
         isExpanded: true,
@@ -150,7 +148,7 @@ class SeletorMaterial extends StatelessWidget {
           focusedBorder: InputBorder.none,
           contentPadding: EdgeInsets.zero,
         ),
-        padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+        padding: const EdgeInsets.fromLTRB(16, 0, 12, 0),
         borderRadius: BorderRadius.circular(RecorteRaio.menu),
         dropdownColor: RecorteCores.superficie,
         elevation: 8,

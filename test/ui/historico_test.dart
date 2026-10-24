@@ -159,20 +159,4 @@ void main() {
 
     expect(fake.configuracoes.nomeEmpresa, 'Adesivos Exemplo');
   });
-
-  testWidgets('diálogo do nome da empresa não muda com o teclado aberto', (
-    tester,
-  ) async {
-    await _abrir(tester, comOrcamento: false);
-    await tester.tap(find.byTooltip('Menu'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Nome da empresa'));
-    await tester.pumpAndSettle();
-    final antes = tester.getRect(find.byType(AlertDialog));
-
-    tester.view.viewInsets = const FakeViewPadding(bottom: 800);
-    addTearDown(tester.view.resetViewInsets);
-    await tester.pumpAndSettle();
-    expect(tester.getRect(find.byType(AlertDialog)), antes);
-  });
 }

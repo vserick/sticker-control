@@ -20,7 +20,7 @@ Future<MaterialRepositoryFake> _abrir(
 
 Future<void> _preencher(WidgetTester tester, String nome, String preco) async {
   await tester.enterText(campoDe('Nome do material'), nome);
-  await tester.enterText(campoDe('Preço por metro - em comprimento'), preco);
+  await tester.enterText(campoDe('Preço por metro'), preco);
 }
 
 void main() {
@@ -50,7 +50,7 @@ void main() {
 
     await tester.tap(find.text('Novo material'));
     await tester.pumpAndSettle();
-    expect(find.text('Largura do material'), findsOneWidget);
+    expect(find.text('Largura fixa: 1,10 m.'), findsOneWidget);
 
     await _preencher(tester, 'Vinil branco', '50,5');
     await tester.tap(find.text('Salvar'));
@@ -97,10 +97,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Editar material'), findsOneWidget);
 
-    await tester.enterText(
-      campoDe('Preço por metro - em comprimento'),
-      '60,00',
-    );
+    await tester.enterText(campoDe('Preço por metro'), '60,00');
     await tester.tap(find.text('Salvar'));
     await tester.pumpAndSettle();
 
@@ -120,51 +117,5 @@ void main() {
 
     expect(repo.itens, isEmpty);
     expect(find.text('Nenhum material cadastrado'), findsOneWidget);
-  });
-
-  testWidgets('largura vem 1,10 m e travada; destravar permite alterar', (
-    tester,
-  ) async {
-    final repo = await _abrir(tester);
-    await tester.tap(find.text('Novo material'));
-    await tester.pumpAndSettle();
-
-    final largura = campoDe('Largura do material');
-    expect(tester.widget<TextField>(largura).controller!.text, '1,10');
-    expect(tester.widget<TextField>(largura).readOnly, isTrue);
-    expect(find.text('Preço por metro - em comprimento'), findsOneWidget);
-
-    await tester.tap(find.byTooltip('Destravar largura'));
-    await tester.pump();
-    expect(tester.widget<TextField>(largura).readOnly, isFalse);
-    await tester.enterText(largura, '1,60');
-    await tester.enterText(campoDe('Comprimento do material'), '50');
-    await _preencher(tester, 'Vinil largo', '80');
-    await tester.tap(find.text('Salvar'));
-    await tester.pumpAndSettle();
-
-    final m = repo.itens.single;
-    expect(m.larguraMm, 1600);
-    expect(m.comprimentoMm, 50000);
-    expect(find.text('Largura 1,60 m'), findsOneWidget);
-  });
-
-  testWidgets('largura inválida e comprimento inválido são recusados', (
-    tester,
-  ) async {
-    final repo = await _abrir(tester);
-    await tester.tap(find.text('Novo material'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Destravar largura'));
-    await tester.pump();
-    await tester.enterText(campoDe('Largura do material'), '0');
-    await tester.enterText(campoDe('Comprimento do material'), 'abc');
-    await _preencher(tester, 'Vinil', '50');
-    await tester.tap(find.text('Salvar'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('A largura deve ser maior que zero.'), findsOneWidget);
-    expect(find.textContaining('comprimento válido'), findsOneWidget);
-    expect(repo.itens, isEmpty);
   });
 }
