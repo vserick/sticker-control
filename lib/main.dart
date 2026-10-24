@@ -34,6 +34,7 @@ class StickerControlApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sticker Control',
       theme: construirTema(),
+      debugShowCheckedModeBanner: false,
       home: HistoricoPage(servicos: servicos),
     );
   }
