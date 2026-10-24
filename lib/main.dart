@@ -7,6 +7,7 @@ import 'data/orcamento_repository.dart';
 import 'data/whatsapp.dart';
 import 'servicos.dart';
 import 'ui/historico/historico_page.dart';
+import 'ui/recorte/tema.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,8 @@ class StickerControlApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sticker Control',
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      theme: construirTema(),
+      debugShowCheckedModeBanner: false,
       home: HistoricoPage(servicos: servicos),
     );
   }

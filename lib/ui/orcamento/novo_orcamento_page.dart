@@ -7,6 +7,15 @@ import '../../logic/formatacao.dart';
 import '../../logic/orcamento.dart';
 import '../../servicos.dart';
 import '../materiais/materiais_page.dart';
+import '../recorte/avisos.dart';
+import '../recorte/barra.dart';
+import '../recorte/campo.dart';
+import '../recorte/estados.dart';
+import '../recorte/icones.dart';
+import '../recorte/resultado.dart';
+import '../recorte/seletores.dart';
+import '../recorte/tipografia.dart';
+import '../recorte/tokens.dart';
 import 'enviar_whatsapp.dart';
 
 /// Calcula um orçamento com resultado ao vivo (visão interna: custo,
@@ -147,12 +156,11 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
         : true;
     navigator.pop();
     mensagens.showSnackBar(
-      SnackBar(
-        content: Text(
-          enviado
-              ? 'Orçamento salvo.'
-              : 'Orçamento salvo, mas não foi possível abrir o WhatsApp.',
-        ),
+      avisoRodape(
+        enviado
+            ? 'Orçamento salvo.'
+            : 'Orçamento salvo, mas não foi possível abrir o WhatsApp.',
+        sucesso: enviado,
       ),
     );
   }
@@ -223,165 +231,179 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
 
   static const _teclado = TextInputType.numberWithOptions(decimal: true);
 
-  Widget _campo({
-    required TextEditingController controller,
-    required String label,
-    String? prefixo,
-    String? sufixo,
-    String? erro,
-    String? ajuda,
-    TextInputType teclado = _teclado,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: controller,
-        keyboardType: teclado,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixText: prefixo,
-          suffixText: sufixo,
-          helperText: ajuda,
-          errorText: erro,
-          border: const OutlineInputBorder(),
-        ),
+  static const _avisoLargura =
+      'Largura acima de 1,10 m: a produção própria não comporta. '
+      'Considere terceirizar.';
+
+  /// Mensagens de erro de uma moldura, sem as vazias.
+  List<String> _erros(List<String?> erros) => [for (final e in erros) ?e];
+
+  Widget _semMaterial() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+      decoration: BoxDecoration(
+        color: RecorteCores.superficie,
+        border: Border.all(color: RecorteCores.borda),
+        borderRadius: BorderRadius.circular(RecorteRaio.celula),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const FichaModalidade(propria: false, icone: Icons.layers_outlined),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nenhum material cadastrado',
+                  style: RecorteTexto.tituloEstado.copyWith(
+                    fontSize: 16,
+                    height: 22 / 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Cadastre um material para calcular.',
+                  style: RecorteTexto.corpoSecundario,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(
+                      64,
+                      RecorteEspaco.alturaBotaoDialogo,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    textStyle: RecorteTexto.botaoDialogo,
+                    iconSize: 18,
+                  ),
+                  onPressed: _abrirMateriais,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Cadastrar'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _formularioProprio(List<MaterialAdesivo> materiais) {
-    if (materiais.isEmpty) {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Icons.info_outline),
-          title: const Text('Nenhum material cadastrado'),
-          subtitle: const Text('Cadastre um material para calcular.'),
-          trailing: TextButton(
-            onPressed: _abrirMateriais,
-            child: const Text('Cadastrar'),
-          ),
-        ),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: DropdownButtonFormField<int>(
-            initialValue: materiais.any((m) => m.id == _materialId)
-                ? _materialId
-                : null,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Material',
-              border: OutlineInputBorder(),
+  /// Célula de carregamento no lugar do seletor e das medidas (5.1).
+  Widget _carregandoMateriais() {
+    return Container(
+      height: 156,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: RecorteCores.superficie,
+        border: Border.all(color: RecorteCores.borda),
+        borderRadius: BorderRadius.circular(RecorteRaio.celula),
+      ),
+      child: const IndicadorCarregando(rotuloSemantico: 'Carregando materiais'),
+    );
+  }
+
+  /// Duplicado cujo material original não existe mais (5.3): lista já
+  /// carregada, nenhum material com o nome do original e nada escolhido.
+  bool _materialOriginalExcluido(List<MaterialAdesivo> materiais) {
+    final nome = _materialNomeBase?.toLowerCase();
+    return widget.base != null &&
+        nome != null &&
+        _materialId == null &&
+        !materiais.any((m) => m.nome.toLowerCase() == nome);
+  }
+
+  List<Widget> _formularioProprio(List<MaterialAdesivo>? materiais) {
+    if (materiais == null) return [_carregandoMateriais()];
+    if (materiais.isEmpty) return [_semMaterial()];
+    return [
+      SeletorMaterial(
+        materiais: [
+          for (final m in materiais)
+            (
+              id: m.id,
+              nome: m.nome,
+              preco: '${formatarBrl(m.precoPorMetroCentavos)} / m',
             ),
-            items: [
-              for (final m in materiais)
-                DropdownMenuItem(
-                  value: m.id,
-                  child: Text(
-                    '${m.nome} · ${formatarBrl(m.precoPorMetroCentavos)} / m',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-            ],
-            onChanged: (id) => setState(() => _materialId = id),
+        ],
+        selecionado: _materialId,
+        onChanged: (id) => setState(() => _materialId = id),
+      ),
+      if (_materialOriginalExcluido(materiais))
+        const AvisoAmarelo(
+          icone: Icons.info_outline,
+          texto: 'O material original não existe mais. Escolha outro.',
+        ),
+      MolduraRecorte(
+        eixo: Axis.horizontal,
+        erros: _erros([_erroMedida(_comprimento), _erroMedida(_largura)]),
+        filhos: [
+          CampoInterno(
+            rotulo: 'Comprimento',
+            icone: const IconeCota.horizontal(),
+            controller: _comprimento,
+            teclado: _teclado,
+            sufixo: 'm',
+            erro: _erroMedida(_comprimento) != null,
           ),
+          CampoInterno(
+            rotulo: 'Largura',
+            icone: const IconeCota.vertical(),
+            controller: _largura,
+            teclado: _teclado,
+            sufixo: 'm',
+            erro: _erroMedida(_largura) != null,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _formularioTerceirizado() {
+    return MolduraRecorte(
+      erros: _erros([_erroFornecedor, _erroMedida(_largura)]),
+      ajuda: 'Não altera o preço.',
+      filhos: [
+        CampoInterno(
+          rotulo: 'Valor do fornecedor',
+          controller: _fornecedor,
+          teclado: _teclado,
+          prefixo: r'R$',
+          erro: _erroFornecedor != null,
         ),
-        _campo(
-          controller: _comprimento,
-          label: 'Comprimento',
-          sufixo: 'm',
-          erro: _erroMedida(_comprimento),
-        ),
-        _campo(
+        CampoInterno(
+          rotulo: 'Largura (informativa)',
+          icone: const IconeCota.vertical(),
           controller: _largura,
-          label: 'Largura',
+          teclado: _teclado,
           sufixo: 'm',
-          erro: _erroMedida(_largura),
+          erro: _erroMedida(_largura) != null,
         ),
       ],
     );
   }
 
-  Widget _formularioTerceirizado() => _campo(
-    controller: _fornecedor,
-    label: 'Valor do fornecedor',
-    prefixo: r'R$ ',
-    erro: _erroFornecedor,
-  );
-
-  Widget _resultadoCard(ResultadoCalculo? r) {
-    final tema = Theme.of(context);
-    if (r == null) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'Preencha os campos para ver o preço.',
-            style: tema.textTheme.bodyMedium,
-          ),
-        ),
-      );
-    }
-    final acrescimo = r.finalCentavos - r.custoCentavos;
-    Widget linha(String rotulo, String valor, {TextStyle? estilo}) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(rotulo, style: estilo),
-          Text(valor, style: estilo),
-        ],
-      ),
-    );
-    return Card(
-      color: tema.colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            linha('Custo', formatarBrl(r.custoCentavos)),
-            linha('Acréscimo', formatarBrl(acrescimo)),
-            const Divider(),
-            linha(
-              'Preço final',
-              formatarBrl(r.finalCentavos),
-              estilo: tema.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _blocoResultado(ResultadoCalculo? r) {
+    return ResultadoRecorte(
+      resumo: r == null
+          ? null
+          : ResumoPreco(
+              custo: formatarBrl(r.custoCentavos),
+              rotuloAcrescimo: 'Acréscimo',
+              acrescimo: formatarBrl(r.finalCentavos - r.custoCentavos),
+              precoFinal: formatarBrl(r.finalCentavos),
             ),
-            if (r.avisoLargura) ...[
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.warning_amber, color: tema.colorScheme.error),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Largura acima de 1,10 m: a produção própria não '
-                      'comporta. Considere terceirizar.',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
+      aviso: r != null && r.avisoLargura ? _avisoLargura : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Novo orçamento'),
-        actions: [
+      appBar: BarraRecorte(
+        titulo: 'Novo orçamento',
+        acoes: [
           IconButton(
             tooltip: 'Materiais',
             icon: const Icon(Icons.layers_outlined),
@@ -392,53 +414,61 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
       body: StreamBuilder<List<MaterialAdesivo>>(
         stream: _materiais,
         builder: (context, snapshot) {
-          final materiais = snapshot.data ?? const <MaterialAdesivo>[];
+          final carregados = snapshot.data;
+          final materiais = carregados ?? const <MaterialAdesivo>[];
           _resolverMaterialBase(materiais);
           final proprio = _tipo == TipoProducao.propria;
           final rascunho = _rascunho(materiais);
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              SegmentedButton<TipoProducao>(
-                segments: const [
-                  ButtonSegment(
-                    value: TipoProducao.propria,
-                    label: Text('Própria'),
-                  ),
-                  ButtonSegment(
-                    value: TipoProducao.terceirizada,
-                    label: Text('Terceirizada'),
-                  ),
-                ],
-                selected: {_tipo},
-                onSelectionChanged: (s) => setState(() => _tipo = s.first),
-              ),
-              const SizedBox(height: 16),
-              if (proprio)
-                _formularioProprio(materiais)
-              else
-                _formularioTerceirizado(),
-              if (!proprio)
-                _campo(
-                  controller: _largura,
-                  label: 'Largura (informativa)',
-                  sufixo: 'm',
-                  erro: _erroMedida(_largura),
-                  ajuda: 'Não altera o preço.',
+          final blocos = <Widget>[
+            SeletorModalidade<TipoProducao>(
+              opcoes: const [
+                (valor: TipoProducao.propria, rotulo: 'Própria'),
+                (valor: TipoProducao.terceirizada, rotulo: 'Terceirizada'),
+              ],
+              selecionado: _tipo,
+              onChanged: (t) => setState(() => _tipo = t),
+            ),
+            if (proprio)
+              ..._formularioProprio(carregados)
+            else
+              _formularioTerceirizado(),
+            MolduraRecorte(
+              erros: _erros([_erroAcrescimo]),
+              filhos: [
+                CampoInterno(
+                  rotulo: 'Acréscimo',
+                  controller: _acrescimo,
+                  teclado: _teclado,
+                  sufixo: '%',
+                  placeholder: '0',
+                  alturaMinima: 72,
+                  erro: _erroAcrescimo != null,
                 ),
-              _campo(
-                controller: _acrescimo,
-                label: 'Acréscimo',
-                sufixo: '%',
-                erro: _erroAcrescimo,
-              ),
-              _campo(
-                controller: _descricao,
-                label: 'Descrição (opcional)',
-                teclado: TextInputType.text,
-              ),
-              _resultadoCard(_resultado(materiais)),
-              const SizedBox(height: 16),
+                CampoInterno(
+                  rotulo: 'Descrição',
+                  rotuloSemantico: 'Descrição (opcional)',
+                  controller: _descricao,
+                  placeholder: 'opcional',
+                  linha: true,
+                  grande: false,
+                  capitalizacao: TextCapitalization.sentences,
+                ),
+              ],
+            ),
+            _blocoResultado(_resultado(materiais)),
+          ];
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(
+              RecorteEspaco.margemTela,
+              8,
+              RecorteEspaco.margemTela,
+              24,
+            ),
+            children: [
+              for (final b in blocos) ...[
+                b,
+                const SizedBox(height: RecorteEspaco.entreBlocos),
+              ],
               FilledButton.icon(
                 onPressed: rascunho == null || _salvando
                     ? null
@@ -446,7 +476,7 @@ class _NovoOrcamentoPageState extends State<NovoOrcamentoPage> {
                 icon: const Icon(Icons.save_outlined),
                 label: const Text('Salvar'),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: RecorteEspaco.entreBotoes),
               OutlinedButton.icon(
                 onPressed: rascunho == null || _salvando
                     ? null

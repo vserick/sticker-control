@@ -26,7 +26,7 @@ Future<ServicosFake> _abrirEditor(
   return fake;
 }
 
-Finder get _campo => find.widgetWithText(TextField, 'Modelo da mensagem');
+Finder get _campo => campoDe('Modelo da mensagem');
 
 String _textoDoCampo(WidgetTester tester) =>
     tester.widget<TextField>(_campo).controller!.text;
