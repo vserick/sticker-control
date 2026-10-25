@@ -55,6 +55,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -107,3 +108,12 @@ flutter:
     - family: InstrumentSans
       fonts:
         - asset: assets/fonts/InstrumentSans-Variable.ttf
+
+# Ícone do app (marca de registro, ver assets/icon). Gerar com:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#EEF0EC"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
